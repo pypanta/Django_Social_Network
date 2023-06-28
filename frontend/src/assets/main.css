@@ -113,6 +113,96 @@ header {
 
 /* MAIN */
 main {
-  margin: var(--10px);
+  margin: var(--20px);
+}
+
+
+/* AUTH SECTION */
+.auth {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--30px);
+  padding: var(--20px);
+}
+
+.auth > div {
+  flex: 1;
+  padding: var(--30px);
   background-color: hsl(0, 0%, 100%);
+  border-radius: var(--10px);
+}
+
+.auth > div:first-of-type {
+  line-height: 1.5;
+}
+
+.auth > div:first-of-type > h2 {
+  margin-bottom: var(--15px);
+  font-size: var(--25px);
+  color: hsl(210, 100%, 40%);
+}
+
+.auth > div:first-of-type > p:not(:last-of-type) {
+  margin-bottom: var(--10px);
+}
+
+.auth > div:first-of-type > p:first-of-type {
+  font-weight: 300;
+}
+
+.auth > div:first-of-type > p:last-of-type {
+  margin-top: var(--20px);
+  font-weight: 700;
+}
+
+@media (max-width: 48rem) {
+  .auth {
+    flex-direction: column;
+  }
+}
+
+/* AUTH FORM */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--10px);
+  letter-spacing: 0.07rem;
+}
+
+.auth-form-group {
+  margin-bottom: var(--20px);
+}
+
+.auth-form-group > label {
+  display: block;
+  margin-bottom: var(--10px);
+  font-size: var(--20px);
+  font-weight: 500;
+}
+
+.auth-form-group > input {
+  width: 100%;
+  padding: var(--20px);
+  font-size: var(--15px);
+  border: 1px solid hsl(0, 0%, 85%);
+  border-radius: var(--10px);
+}
+
+.auth-form-group > input:focus {
+  border: none;
+}
+
+.auth-form > .btn {
+  align-self: flex-start;
+  padding: var(--15px);
+  font-size: var(--20px);
+  color: hsl(0, 0%, 100%);
+  background-color: hsl(210, 100%, 50%);
+  border: none;
+  border-radius: var(--10px);
+}
+.auth-form > .btn:hover,
+.auth-form > .btn:focus {
+  cursor: pointer;
+  background-color: hsl(210, 100%, 60%);
 }
