@@ -101,6 +101,29 @@ main {
   margin-inline: auto;
 }
 
+.btn {
+  padding: var(--15px);
+  font-size: var(--20px);
+  color: hsl(0, 0%, 100%);
+  border: none;
+  border-radius: var(--10px);
+}
+
+.btn:hover,
+.bnt:focus {
+  cursor: pointer;
+}
+
+.user-avatar-200 {
+  width: 200px;
+  height: 200px;
+}
+
+.user-avatar-50 {
+  width: 50px;
+  height: 50px;
+}
+
 
 /* AUTH SECTION */
 .auth {
@@ -173,28 +196,24 @@ main {
 
 .auth-form > .btn {
   align-self: flex-start;
-  padding: var(--15px);
-  font-size: var(--20px);
-  color: hsl(0, 0%, 100%);
   background-color: hsl(210, 100%, 50%);
-  border: none;
-  border-radius: var(--10px);
 }
 .auth-form > .btn:hover,
 .auth-form > .btn:focus {
-  cursor: pointer;
   background-color: hsl(210, 100%, 60%);
 }
 
 
 /* TIMELINE SECTION */
-.timeline {
+.timeline,
+.messages {
   display: flex;
   justify-content: space-between;
   gap: var(--30px);
 }
 
-.timeline > div {
+.timeline > div,
+.messages > div {
   /*
   padding: var(--20px);
   background-color: hsl(0, 0%, 100%);
@@ -208,11 +227,6 @@ main {
   padding: var(--20px);
   text-align: center;
   background-color: hsl(0, 0%, 100%);
-}
-
-.user-info-avatar {
-  width: 200px;
-  height: 200px;
 }
 
 .user-info-name {
@@ -274,18 +288,12 @@ main {
 
 .status-form > form > .form-group > .btn {
   margin-left: auto;
-  padding: var(--15px);
-  font-size: var(--20px);
-  color: hsl(0, 0%, 100%);
   background-color: hsl(210, 100%, 50%);
-  border: none;
-  border-radius: var(--10px);
 
 }
 
 .status-form > form > .form-group > .btn:hover,
 .status-form > form > .form-group > .btn:focus {
-  cursor: pointer;
   background-color: hsl(210, 100%, 60%);
 }
 
@@ -300,11 +308,6 @@ main {
   display: flex;
   justify-content: space-between;
   gap: var(--20px);
-}
-
-.status-post-info-avatar {
-  width: 50px;
-  height: 50px;
 }
 
 .status-post-info-name {
@@ -388,11 +391,6 @@ main {
   margin-bottom: var(--20px);
 }
 
-.suggested-users-avatar {
-  width: 50px;
-  height: 50px;
-}
-
 .suggested-users-group > p {
   align-self: center;
   white-space: nowrap;
@@ -439,6 +437,113 @@ main {
 .trends-group > div > p:first-of-type {
   font-weight: 600;
   letter-spacing: 0.06rem;
+}
+
+
+/* MESSAGES */
+.messages-info {
+  height: max-content;
+  padding: var(--20px);
+  background-color: hsl(0, 0%, 100%);
+}
+
+.messages-info > div:not(:last-of-type) {
+  margin-bottom: var(--20px);
+}
+
+.messages-info > div {
+  display: flex;
+  gap: var(--15px);
+}
+
+.messages-info > div > p {
+  align-self: center;
+}
+
+.messages-info > div > p:first-of-type {
+  font-size: var(--15px);
+  font-weight: 600;
+}
+
+.messages-wrapper {
+  flex-grow: 2;
+}
+
+.messages-container {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  row-gap: var(--20px);
+  margin-bottom: var(--20px);
+}
+
+.messages-container, .messages-post {
+  padding: var(--20px);
+  background-color: #fff;
+  border-radius: var(--10px);
+}
+
+.message-left {
+  grid-column: span 8;
+}
+
+.message-right {
+  grid-column: 4 / span 5;
+}
+
+.message-left,
+.message-right {
+  display: flex;
+  flex-direction: column;
+  gap: var(--5px);
+}
+
+.message-left > div,
+.message-right > div {
+  display: flex;
+  gap: var(--15px);
+}
+
+.message-left > p {
+  align-self: flex-end;
+}
+.message-right > p {
+  align-self: flex-start;
+}
+
+.message-left > div > p,
+.message-right > div > p {
+  padding: var(--10px);
+  font-size: 1.2rem;
+  letter-spacing: 0.05rem;
+  line-height: 1.3;
+}
+
+.message-left > div > p {
+  background-color: hsl(220, 100%, 93%);
+  border-top-right-radius: var(--10px);
+  border-bottom-left-radius: var(--10px);
+  border-bottom-right-radius: var(--10px);
+}
+
+.message-right > div > p {
+  color: hsl(0, 0%, 100%);
+  background-color: hsl(220, 100%, 55%);
+  border-top-right-radius: var(--10px);
+  border-bottom-left-radius: var(--10px);
+  border-bottom-right-radius: var(--10px);
+}
+
+.messages-post-form > textarea {
+  width: 100%;
+  padding: var(--10px);
+  font-size: var(--15px);
+  border: 1px solid hsl(0, 0%, 80%);
+  border-radius: var(--10px);
+}
+
+.messages-post-form > .btn {
+  margin-top: var(--15px);
+  background-color: hsl(330, 100%, 35%);
 }
 
 
@@ -493,7 +598,8 @@ main {
 }
 
 @media (max-width: 61rem) {
-  .timeline {
+  .timeline,
+  .messages {
     flex-direction: column;
   }
   .user-info-stats {

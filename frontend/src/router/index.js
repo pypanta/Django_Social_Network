@@ -3,6 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
 import TimelineView from '../views/TimelineView.vue'
+import MessagesView from '../views/MessagesView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -26,6 +27,11 @@ const router = createRouter({
       path: '/timeline',
       name: 'timeline',
       component: TimelineView
+    },
+    {
+      path: '/messages',
+      name: 'messages',
+      component: MessagesView
     },
     {
       path: '/about',

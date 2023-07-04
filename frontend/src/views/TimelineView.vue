@@ -1,7 +1,7 @@
 <template>
   <section class="timeline">
     <div class="user-info">
-      <img :src="userAvatar" alt="Avatar" class="user-info-avatar">
+      <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
       <p class="user-info-name">User Name</p>
       <div class="user-info-stats">
         <a href="#">250 friends</a>
@@ -24,7 +24,7 @@
       </div>
       <article class="status-post">
         <section class="status-post-info">
-          <img :src="userAvatar" alt="Avatar" class="status-post-info-avatar">
+          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
           <p class="status-post-info-name">User Name</p>
           <p class="status-post-info-time">24 minutes ago</p>
         </section>
@@ -59,7 +59,7 @@
       </article>
       <article class="status-post">
         <section class="status-post-info">
-          <img :src="userAvatar" alt="Avatar" class="status-post-info-avatar">
+          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
           <p class="status-post-info-name">User Name</p>
           <p class="status-post-info-time">45 minutes ago</p>
         </section>
@@ -97,17 +97,17 @@
       <div class="suggested-users">
         <p>People you may know</p>
         <div class="suggested-users-group">
-          <img :src="userAvatar" alt="Avatar" class="suggested-users-avatar">
+          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
           <p>User Name</p>
           <button>Show</button>
         </div>
         <div class="suggested-users-group">
-          <img :src="userAvatar" alt="Avatar" class="suggested-users-avatar">
+          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
           <p>User Name</p>
           <button>Show</button>
         </div>
         <div class="suggested-users-group">
-          <img :src="userAvatar" alt="Avatar" class="suggested-users-avatar">
+          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
           <p>User Name</p>
           <button>Show</button>
         </div>
