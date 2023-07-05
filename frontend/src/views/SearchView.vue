@@ -77,52 +77,14 @@
     </div>
 
     <div class="suggestions">
-      <div class="suggested-users">
-        <p>People you may know</p>
-        <div class="suggested-users-group">
-          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
-          <p>User Name</p>
-          <button>Show</button>
-        </div>
-        <div class="suggested-users-group">
-          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
-          <p>User Name</p>
-          <button>Show</button>
-        </div>
-        <div class="suggested-users-group">
-          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
-          <p>User Name</p>
-          <button>Show</button>
-        </div>
-      </div>
-      <div class="trends">
-        <p>Trends</p>
-        <div class="trends-group">
-          <div>
-            <p>#username</p>
-            <p>98 posts</p>
-          </div>
-          <button>Explore</button>
-        </div>
-        <div class="trends-group">
-          <div>
-            <p>#username</p>
-            <p>98 posts</p>
-          </div>
-          <button>Explore</button>
-        </div>
-        <div class="trends-group">
-          <div>
-            <p>#username</p>
-            <p>98 posts</p>
-          </div>
-          <button>Explore</button>
-        </div>
-      </div>
+      <SuggestedUsers />
+      <Trends />
     </div>
   </section>
 </template>
 
 <script setup>
+import SuggestedUsers from '@/components/SuggestedUsers.vue'
+import Trends from '@/components/Trends.vue'
 import userAvatar from "../assets/images/user-avatar.png"
 </script>
