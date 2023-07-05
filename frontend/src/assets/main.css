@@ -206,7 +206,8 @@ main {
 
 /* TIMELINE SECTION */
 .timeline,
-.messages {
+.messages,
+.search {
   display: flex;
   justify-content: space-between;
   gap: var(--30px);
@@ -546,6 +547,60 @@ main {
   background-color: hsl(330, 100%, 35%);
 }
 
+.messages-post-form > .btn:hover,
+.messages-post-form > .btn:focus {
+  background-color: hsl(330, 100%, 45%);
+}
+
+
+/* SEARCH */
+.search-main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--20px);
+}
+
+.search-form,
+.search-post {
+  padding: var(--20px);
+  background-color: hsl(0, 0%, 100%);
+  border-radius: var(--10px);
+}
+
+.search-form {
+  display: flex;
+  gap: var(--10px);
+}
+
+.search-form > input {
+  width: 100%;
+  padding: var(--20px);
+  font-size: 1.3rem;
+  background-color: hsl(210, 100%, 95%);
+  border: none;
+  border-radius: var(--10px);
+}
+
+.search-form > .btn {
+  background-color: hsl(330, 100%, 35%);
+}
+
+.search-form > .btn:hover,
+.search-form > .btn:focus{
+  background-color: hsl(330, 100%, 45%);
+}
+
+.search-result {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--20px);
+}
+
+.search-result > .user-info {
+  border-radius: var(--10px);
+}
+
 
 /* MEDIA */
 @media (max-width: 75rem) {
@@ -599,7 +654,8 @@ main {
 
 @media (max-width: 61rem) {
   .timeline,
-  .messages {
+  .messages,
+  .search {
     flex-direction: column;
   }
   .user-info-stats {
@@ -631,5 +687,19 @@ main {
   }
   .status-post-footer > div:last-of-type {
     margin-left: 0;
+  }
+}
+
+@media (max-width: 38rem) {
+  .search-form {
+    flex-direction: column;
+  }
+  .search-form > input {
+    font-size: 1.1rem;
+  }
+  .search-form > .btn {
+    align-self: flex-start;
+    padding: var(--10px);
+    font-size: 1.1rem;
   }
 }
