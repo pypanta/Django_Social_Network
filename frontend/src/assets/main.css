@@ -93,6 +93,51 @@ header {
   color: hsl(210, 100%, 40%);
 }
 
+.profile {
+  position: relative;
+}
+
+.profile-menu {
+  display: none;
+  position: absolute;
+  list-style: none;
+  background-color: hsl(210, 100%, 55%);
+}
+
+.profile-menu:hover {
+  display: block;
+}
+
+@media (max-width: 75.5rem) {
+  .profile-menu {
+    right: 0;
+  }
+}
+
+.profile-menu > li {
+  padding: var(--5px) var(--20px);
+}
+
+.profile-menu > li:hover,
+.profile-menu > li:focus {
+  background-color: hsl(210, 100%, 65%);
+}
+
+.profile-menu > li > a {
+  display: block;
+  min-width: max-content;
+  text-decoration: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #fff;
+}
+
+.profile:hover .profile-menu,
+.profile:focus .profile-menu {
+  display: flex;
+  flex-direction: column;
+}
+
 
 /* MAIN */
 main {
@@ -599,6 +644,12 @@ main {
 
 .search-result > .user-info {
   border-radius: var(--10px);
+}
+
+.error {
+  margin: var(--5px) 0;
+  font-size: .8rem;
+  color: hsl(0, 100%, 50%);
 }
 
 

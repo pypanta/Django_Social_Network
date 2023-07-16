@@ -12,14 +12,27 @@
       </p>
     </div>
     <div>
-      <form class="auth-form">
+      <form @submit.prevent="handleSubmit" class="auth-form">
         <div class="auth-form-group">
-          <label for="">E-mail</label>
-          <input type="email" placeholder="Your e-mail address">
+          <label>E-mail or Username</label>
+          <input
+            v-model="data.email"
+            type="text"
+            placeholder="Your e-mail address or username"
+          />
         </div>
         <div class="auth-form-group">
-          <label for="">Password</label>
-          <input type="password" placeholder="Your password">
+          <label>Password</label>
+          <input
+            v-model="data.password"
+            type="password"
+            placeholder="Your password"
+          />
+        </div>
+        <div class="auth-form-group">
+          <p v-if="errors.detail" class="error">
+            {{ errors.detail }}
+          </p>
         </div>
         <input type="submit" value="Log In" class="btn btn-success">
       </form>
@@ -28,4 +41,45 @@
 </template>
 
 <script setup>
+import { reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
+import { useUserStore } from '@/stores/user'
+import fetchData from '@/utils/handleFetch.js'
+
+const store = useUserStore()
+const { isAuthenticated, message, userData } = storeToRefs(store)
+
+const router = useRouter()
+
+const data = reactive({
+  email: '',
+  password: ''
+})
+
+const errors = reactive({
+  detail: ''
+})
+
+const handleSubmit = async () => {
+  const response = await fetchData('login', 'POST', data)
+  if (response.ok) {
+    store.isAuthenticated = true
+    store.getUser()
+    router.push({ name: 'home' })
+  } else {
+    const responseError = {
+      status: response.status,
+      body: await response.json()
+    }
+    for (const error in errors) {
+      if (error in responseError['body']) {
+        errors[error] = responseError['body'][error]
+      } else {
+        errors[error] = ''
+      }
+    }
+    throw new Error(JSON.stringify(responseError))
+  }
+}
 </script>

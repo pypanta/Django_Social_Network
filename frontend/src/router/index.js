@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 import HomeView from '../views/HomeView.vue'
 import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
@@ -17,12 +18,22 @@ const router = createRouter({
     {
       path: '/signup',
       name: 'signup',
-      component: SignupView
+      component: SignupView,
+      beforeEnter: async (to, from) => {
+        const store = useUserStore()
+        await store.getUser()
+        if (store.isAuthenticated) return {name: 'home'}
+      }
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginView
+      component: LoginView,
+      beforeEnter: async (to, from) => {
+        const store = useUserStore()
+        await store.getUser()
+        if (store.isAuthenticated) return {name: 'home'}
+      }
     },
     {
       path: '/timeline',
@@ -47,7 +58,17 @@ const router = createRouter({
       // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue')
     }
-  ]
+  ],
+})
+
+router.beforeEach(async (to, from, next) => {
+  const store = useUserStore()
+  await store.getUser()
+  if (to.name !== 'login' && to.name !== 'signup' && !store.isAuthenticated) {
+    next({ name: 'login' })
+  } else {
+    next()
+  }
 })
 
 export default router

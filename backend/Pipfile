@@ -9,8 +9,10 @@ djangorestframework = "*"
 djangorestframework-simplejwt = "*"
 pillow = "*"
 django-cors-headers = "*"
+pyjwt = "*"
 
 [dev-packages]
+ipython = "*"
 
 [requires]
 python_version = "3.11"
