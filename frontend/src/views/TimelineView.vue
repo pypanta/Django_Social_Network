@@ -2,7 +2,7 @@
   <section class="timeline">
     <div class="user-info">
       <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
-      <p class="user-info-name">User Name</p>
+      <p class="user-info-name">{{ store.getUsername }}</p>
       <div class="user-info-stats">
         <a href="#">250 friends</a>
         <a href=#>98 posts</a>
@@ -22,16 +22,28 @@
           </div>
         </form>
       </div>
-      <article class="status-post">
+      <article
+        v-for="post in posts"
+        :key="post.id"
+        class="status-post"
+      >
         <section class="status-post-info">
           <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
-          <p class="status-post-info-name">User Name</p>
-          <p class="status-post-info-time">24 minutes ago</p>
+          <p class="status-post-info-name">
+            {{ createdBy(post.created_by) }}
+          </p>
+          <p class="status-post-info-time">
+            {{ post.time_ago }} ago
+          </p>
         </section>
         <section class="status-post-body">
-          <p>Post with image.</p>
-          <p>Dolor veritatis deserunt esse sit tempora Inventore ea sit reiciendis natus odio At facere sed quas autem quos Itaque dolorem.</p>
-          <img :src="postImage" alt="Post Image">
+          <p>{{ post.body }}</p>
+          <div
+            v-if="post.post_images.length"
+            v-for="image in post.post_images" :key="image.id"
+          >
+            <img :src="image.image" alt="Post Image">
+          </div>
         </section>
         <footer class="status-post-footer">
           <div>
@@ -101,8 +113,58 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
 import SuggestedUsers from '@/components/SuggestedUsers.vue'
 import Trends from '@/components/Trends.vue'
+import fetchData from '@/utils/handleFetch.js'
 import userAvatar from "../assets/images/user-avatar.png"
 import postImage from "../assets/images/post-1.jpg"
+
+const store = useUserStore()
+
+
+const posts = ref([])
+
+onMounted(async () => {
+  const response = await fetchData('posts', 'GET')
+  if (response.ok) {
+    posts.value = await response.json()
+    console.log(posts.value)
+  } else {
+    throw response
+  }
+})
+
+const createdBy = (user) => {
+  if (user.first_name && user.last_name) {
+    return `${user.first_name} ${user.last_name}`
+  } else if (user.username) {
+    return user.username
+  } else {
+    return user.email
+  }
+}
+
+// https://stackoverflow.com/a/69122877
+// const timeSince = (input) => {
+//   const date = (input instanceof Date) ? input : new Date(input)
+//   const formatter = new Intl.RelativeTimeFormat('en')
+//   const ranges = {
+//     years: 3600 * 24 * 365,
+//     months: 3600 * 24 * 30,
+//     weeks: 3600 * 24 * 7,
+//     days: 3600 * 24,
+//     hours: 3600,
+//     minutes: 60,
+//     seconds: 1
+//   }
+//   const secondsElapsed = (date.getTime() - Date.now()) / 1000
+//   for (let key in ranges) {
+//     if (ranges[key] < Math.abs(secondsElapsed)) {
+//       const delta = secondsElapsed / ranges[key]
+//       return formatter.format(Math.round(delta), key)
+//     }
+//   }
+// }
 </script>

@@ -9,7 +9,6 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
 

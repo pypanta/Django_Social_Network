@@ -4,6 +4,15 @@ from ..models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = (
+            'id', 'first_name', 'last_name', 'username',
+            'email', 'date_joined', 'last_login'
+        )
+
+
+class UserRegisterSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(
         style={'input_type': 'password'},
         write_only=True

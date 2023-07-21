@@ -15,7 +15,7 @@ from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 from ..models import User
 from .authentication import JWTAuthentication
 from .permissions import AnonPermissionOnly
-from .serializers import UserSerializer
+from .serializers import UserRegisterSerializer, UserSerializer
 from .utils import get_tokens_for_user
 
 
@@ -24,7 +24,7 @@ class Signup(APIView):
 
     def post(self, request):
         data = request.data
-        serializer = UserSerializer(data=data)
+        serializer = UserRegisterSerializer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)

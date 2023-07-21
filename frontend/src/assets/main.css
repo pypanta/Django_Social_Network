@@ -369,7 +369,7 @@ main {
   margin-bottom: var(--10px);
 }
 
-.status-post-body > img {
+.status-post-body > div > img {
   width: 100%;
 }
 
