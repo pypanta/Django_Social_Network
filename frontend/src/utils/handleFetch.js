@@ -29,9 +29,23 @@ async function refreshToken() {
 }
 
 async function fetchData(end_point, method=null, data=null) {
+  // let jsonData = null;
+  // if (data) {
+  //   jsonData = JSON.stringify(data);
+  // }
+
+  let headers = null;
   let jsonData = null;
-  if (data) {
-    jsonData = JSON.stringify(data);
+  if (data instanceof FormData) {
+    headers = {};
+    jsonData = data;
+  } else {
+    headers = {
+      'Content-Type': 'application/json'
+    };
+    if (data) {
+      jsonData = JSON.stringify(data);
+    }
   }
 
   const url = `http://localhost:8000/api/${end_point}/`
@@ -39,9 +53,10 @@ async function fetchData(end_point, method=null, data=null) {
   try {
     const response = await fetch(url, {
       method: method,
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      // headers: {
+      //   'Content-Type': 'application/json'
+      // },
+      headers: headers,
       credentials: 'include',
       body: jsonData
     })

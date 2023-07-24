@@ -12,19 +12,28 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class PostSerializer(serializers.ModelSerializer):
-    # created_by = serializers.SerializerMethodField(read_only=True)
-    # user = UserSerializer(read_only=True, source='created_by')
     created_by = UserSerializer(read_only=True)
-    post_images = PostImageSerializer(many=True)
+    post_images = PostImageSerializer(many=True, required=False)
 
     class Meta:
         model = Post
         fields = ('id', 'body', 'created_by', 'time_ago', 'post_images')
 
-    # def get_created_by(self, obj):
-    #     if obj.created_by.full_name:
-    #         return obj.created_by.full_name
-    #     elif obj.created_by.username:
-    #         return obj.created_by.username
-    #     else:
-    #         return obj.created_by.email
+    def create(self, validated_data):
+        data = {
+            'body': validated_data.get('body'),
+            'created_by': validated_data.get('created_by')
+        }
+
+        post = Post.objects.create(**data)
+
+        if 'images' in validated_data:
+            # PostImage.objects.create(image=validated_data['images'],
+            #                          post=post)
+            PostImage.objects.bulk_create(
+                [
+                    PostImage(image=i, post=post)
+                    for i in validated_data['images']
+                ]
+            )
+        return post

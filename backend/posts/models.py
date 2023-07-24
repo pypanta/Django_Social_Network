@@ -22,7 +22,9 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.body[:30]
+        if self.body:
+            return self.body[:30]
+        return ''
 
     class Meta:
         ordering = ('-created_at',)
@@ -42,4 +44,6 @@ class PostImage(models.Model):
                              on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.image.url
+        if self.image:
+            return self.image.url
+        return ''

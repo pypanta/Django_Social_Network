@@ -9,11 +9,16 @@ class PostImageInline(admin.TabularInline):
     extra = 1
 
 
+def short_post_body(obj):
+    if obj.body:
+        return obj.body[:20]
+    return '-'
+
+def post_images_count(obj):
+    return obj.images.count()
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     inlines = [PostImageInline]
-    list_display = ['id', 'description', 'created_at']
+    list_display = ['id', short_post_body, post_images_count, 'created_at']
     readonly_fields = ('created_at',)
-
-    def description(self, obj):
-        return obj.body[:50]
