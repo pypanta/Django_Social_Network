@@ -43,7 +43,9 @@
         </a>
         <ul v-if="store.isAuthenticated" class="profile-menu">
           <li>
-            <a href="#">My Profile</a>
+            <router-link
+              :to="{ name: 'profile', params: { id: store.userData.id } }"
+            >My Profile</router-link>
           </li>
           <li>
             <router-link :to="{ name: 'timeline' }">Timeline</router-link>

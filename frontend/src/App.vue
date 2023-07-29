@@ -2,7 +2,8 @@
   <Nav />
 
   <main>
-    <RouterView />
+    <!-- https://stackoverflow.com/a/65064827 -->
+    <RouterView :key="$route.fullPath" />
   </main>
 </template>
 

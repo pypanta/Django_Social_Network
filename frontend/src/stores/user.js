@@ -2,18 +2,16 @@ import { ref, reactive, computed } from 'vue'
 import { defineStore } from 'pinia'
 import fetchData from '@/utils/handleFetch.js'
 
-class User {
-    id = null
-    first_name = ''
-    last_name = ''
-    username = ''
-    email = ''
-}
-
 export const useUserStore = defineStore('user', () => {
   const isAuthenticated = ref(false);
   const message = ref('');
-  const userData = reactive(new User);
+  const userData = reactive({
+    id: null,
+    first_name: '',
+    last_name: '',
+    username: '',
+    email: ''
+  });
 
   const getUsername = computed(() => {
     if (userData.first_name && userData.last_name) {
@@ -45,7 +43,6 @@ export const useUserStore = defineStore('user', () => {
     } else {
       isAuthenticated.value = false;
       message.value = 'You are not authenticated.';
-      userData.value = new User;
     }
   }
 
