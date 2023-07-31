@@ -4,12 +4,17 @@ from ..models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
+    posts = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = User
         fields = (
             'id', 'first_name', 'last_name', 'username',
-            'email', 'date_joined', 'last_login'
+            'email', 'date_joined', 'last_login', 'posts'
         )
+
+    def get_posts(self, obj):
+        return obj.posts.values()
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

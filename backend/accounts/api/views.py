@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
-from rest_framework import status
+from rest_framework import generics, status, filters
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -119,3 +119,13 @@ class UserAPIView(APIView):
     @method_decorator(csrf_protect)
     def get(self, request):
         return Response(UserSerializer(request.user).data)
+
+
+class UserSearchAPIView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['first_name', 'last_name', 'username',
+                     'email', 'posts__body']
+    ordering_fields = ['first_name', 'last_name', 'username', 'email']

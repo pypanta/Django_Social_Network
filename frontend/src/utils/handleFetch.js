@@ -48,7 +48,11 @@ async function fetchData(end_point, method=null, data=null) {
     }
   }
 
-  const url = `http://localhost:8000/api/${end_point}/`
+  let url = `http://localhost:8000/api/${end_point}/`
+
+  if (url.includes('?q=')) {
+    url = `http://localhost:8000/api/${end_point}`
+  }
 
   try {
     const response = await fetch(url, {

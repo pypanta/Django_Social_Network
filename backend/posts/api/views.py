@@ -1,5 +1,4 @@
-# 03:00:00
-from rest_framework import generics, status
+from rest_framework import filters, generics, status
 from rest_framework.response import Response
 
 from accounts.api.authentication import JWTAuthentication
@@ -70,3 +69,12 @@ class PostListAPIView(generics.ListCreateAPIView):
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED,
                         headers=headers)
+
+
+class PostSearchAPIView(generics.ListAPIView):
+    authentication_classes = [JWTAuthentication]
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    ordering_fields = ['body', 'created_by', 'created_at']
+    search_fields = ['body', 'created_by__username']

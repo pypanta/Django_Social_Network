@@ -615,10 +615,16 @@ main {
 
 .search-form {
   display: flex;
+  flex-direction: column;
   gap: var(--10px);
 }
 
-.search-form > input {
+.search-form > .form-group {
+  display: flex;
+  gap: var(--10px);
+}
+
+.search-form > .form-group:first-of-type > input {
   width: 100%;
   padding: var(--20px);
   font-size: 1.3rem;
@@ -627,12 +633,12 @@ main {
   border-radius: var(--10px);
 }
 
-.search-form > .btn {
+.search-form > .form-group > .btn {
   background-color: hsl(330, 100%, 35%);
 }
 
-.search-form > .btn:hover,
-.search-form > .btn:focus{
+.search-form > .form-group > .btn:hover,
+.search-form > .form-group > .btn:focus {
   background-color: hsl(330, 100%, 45%);
 }
 

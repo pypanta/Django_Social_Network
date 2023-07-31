@@ -1,79 +1,50 @@
 <template>
   <section class="search">
     <div class="search-main">
-      <div class="search-form">
-        <input type="search" placeholder="What are you looking for?">
-        <button class="btn">Search</button>
-      </div>
+      <form @submit.prevent="search" class="search-form">
+        <div class="form-group">
+          <input v-model="searchTerm" type="search" placeholder="What are you looking for?">
+          <button class="btn">Search</button>
+        </div>
+        <div class="form-group">
+          <p><strong>Search in</strong>:</p>
+          <input v-model="searchType.users" type="checkbox" name="users">
+          <label for="users">Users</label>
+          <select v-model="selectedUserFilter">
+            <option selected disabled value="">Ordered By</option>
+            <option value="username">Username ASC</option>
+            <option value="-username">Username DESC</option>
+            <option value="email">E-mail ASC</option>
+            <option value="-email">E-mail DESC</option>
+          </select>
+          <input v-model="searchType.posts" type="checkbox" name="posts">
+          <label for="posts">Posts</label>
+          <select v-model="selectedPostFilter">
+            <option selected disabled value="">Ordered By</option>
+            <option value="body">Post ASC</option>
+            <option value="-body">Post DESC</option>
+            <option value="created_at">Created At ASC</option>
+            <option value="-created_at">Created At DESC</option>
+            <option value="created_by">Created By ASC</option>
+            <option value="-created_by">Created By DESC</option>
+          </select>
+        </div>
+      </form>
       <div class="search-result">
-        <div class="user-info">
+        <div v-for="user in users" :key="user.id" class="user-info">
           <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
-          <p class="user-info-name">User Name</p>
-          <div class="user-info-stats">
-            <a href="#">250 friends</a>
-            <a href=#>98 posts</a>
-          </div>
-        </div>
-        <div class="user-info">
-          <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
-          <p class="user-info-name">User Name</p>
-          <div class="user-info-stats">
-            <a href="#">250 friends</a>
-            <a href=#>98 posts</a>
-          </div>
-        </div>
-        <div class="user-info">
-          <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
-          <p class="user-info-name">User Name</p>
-          <div class="user-info-stats">
-            <a href="#">250 friends</a>
-            <a href=#>98 posts</a>
-          </div>
-        </div>
-        <div class="user-info">
-          <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
-          <p class="user-info-name">User Name</p>
+          <p class="user-info-name">
+          <router-link :to="{ name: 'profile', params: {id: user.id }}">
+            {{ createdBy(user) }}
+          </router-link>
+          </p>
           <div class="user-info-stats">
             <a href="#">250 friends</a>
             <a href=#>98 posts</a>
           </div>
         </div>
       </div>
-      <article class="status-post">
-        <section class="status-post-info">
-          <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
-          <p class="status-post-info-name">User Name</p>
-          <p class="status-post-info-time">24 minutes ago</p>
-        </section>
-        <section class="status-post-body">
-          <p>Post with image.</p>
-          <p>Dolor veritatis deserunt esse sit tempora Inventore ea sit reiciendis natus odio At facere sed quas autem quos Itaque dolorem.</p>
-          <img :src="postImage" alt="Post Image">
-        </section>
-        <footer class="status-post-footer">
-          <div>
-            <a href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="status-post-icon">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-              </svg>
-            </a>
-            <span>24 likes</span>
-          </div>
-          <div>
-            <a href="#">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="status-post-icon">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
-              </svg>
-            </a>
-            <span>0 comments</span>
-          </div>
-          <div>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="status-post-icon">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
-            </svg>
-          </div>
-        </footer>
-      </article>
+      <Posts :posts="posts" />
     </div>
 
     <div class="suggestions">
@@ -84,7 +55,69 @@
 </template>
 
 <script setup>
+import { ref, reactive } from 'vue'
 import SuggestedUsers from '@/components/SuggestedUsers.vue'
+import Posts from '@/components/Posts.vue'
 import Trends from '@/components/Trends.vue'
-import userAvatar from "../assets/images/user-avatar.png"
+import fetchData from '@/utils/handleFetch.js'
+import createdBy from '@/utils/createdby.js'
+
+const searchTerm = ref('')
+const searchType = reactive({
+  users: false,
+  posts: false
+})
+const selectedUserFilter = ref('')
+const selectedPostFilter = ref('')
+const users = ref([])
+const posts = ref([])
+
+function generateURL(urlPoint) {
+  let url = null;
+  if (urlPoint === 'user') {
+    url = `user/search/?q=${searchTerm.value}`;
+    if (selectedUserFilter.value !== '') {
+      url = `user/search/?q=${searchTerm.value}&ordering=${selectedUserFilter.value}`;
+    }
+  }
+  if (urlPoint === 'posts') {
+    url = `posts/search/?q=${searchTerm.value}`;
+    if (selectedPostFilter.value !== '') {
+      url = `posts/search/?q=${searchTerm.value}&ordering=${selectedPostFilter.value}`;
+    }
+  }
+  return url;
+}
+
+const search = async () => {
+  if (searchType.users && !searchType.posts) {
+    const url = generateURL('user')
+    const response = await fetchData(url, 'GET')
+    if (response.ok) {
+      users.value = await response.json()
+      searchTerm.value = ''
+      posts.value = []
+    }
+  } else if (searchType.posts && !searchType.users) {
+    const url = generateURL('posts')
+    const response = await fetchData(url, 'GET')
+    if (response.ok) {
+      posts.value = await response.json()
+      searchTerm.value = ''
+      users.value = []
+    }
+  } else {
+    const users_response = await fetchData(
+      `user/search/?q=${searchTerm.value}`, 'GET'
+    )
+    const posts_response = await fetchData(
+      `posts/search/?q=${searchTerm.value}`, 'GET'
+    )
+    if (users_response.ok && posts_response.ok) {
+      users.value = await users_response.json()
+      posts.value = await posts_response.json()
+      searchTerm.value = ''
+    }
+  }
+}
 </script>

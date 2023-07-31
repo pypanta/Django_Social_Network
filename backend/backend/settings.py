@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     # 'rest_framework_simplejwt.token_blacklist',
+    'django_filters',
     'accounts',
     'posts',
 ]
@@ -145,6 +146,7 @@ AUTHENTICATION_BACKENDS = [
 
 
 REST_FRAMEWORK = {
+    'SEARCH_PARAM': 'q',
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
         #'accounts.api.authentication.JWTAuthentication'
