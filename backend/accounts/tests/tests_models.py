@@ -52,3 +52,32 @@ class UserTestCase(TestCase):
         user = User.objects.create_user(email='admin@mail.com',
                                         password='admin1234')
         self.assertFalse(user.username)
+
+    def test_follow_user(self):
+        user_1 = User.objects.create_user(email='user1@email.com',
+                                          password='test1234')
+        user_2 = User.objects.create_user(email='user2@email.com',
+                                          password='test1234')
+        user_1.follow(user_2)
+        self.assertEqual(user_1.following.count(), 1)
+        self.assertEqual(user_1.followers.count(), 0)
+        self.assertEqual(user_2.following.count(), 0)
+        self.assertEqual(user_2.followers.count(), 1)
+        user_1_following = user_1.following.first()
+        self.assertEqual(user_1_following.follower, user_1)
+        self.assertEqual(user_1_following.followed, user_2)
+        user_2_followers = user_2.followers.first()
+        self.assertEqual(user_2_followers.follower, user_1)
+        self.assertEqual(user_2_followers.followed, user_2)
+
+    def test_unfollow_user(self):
+        user_1 = User.objects.create_user(email='user1@email.com',
+                                          password='test1234')
+        user_2 = User.objects.create_user(email='user2@email.com',
+                                          password='test1234')
+        user_1.follow(user_2)
+        self.assertEqual(user_1.following.count(), 1)
+        self.assertEqual(user_2.followers.count(), 1)
+        user_1.unfollow(user_2)
+        self.assertEqual(user_1.following.count(), 0)
+        self.assertEqual(user_2.followers.count(), 0)

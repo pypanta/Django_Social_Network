@@ -17,4 +17,8 @@ urlpatterns = [
         name='token_refresh'),
     path('user/', views.UserAPIView.as_view(), name='user'),
     path('user/search/', views.UserSearchAPIView.as_view(), name='search'),
+    path('user/follow/', views.FollowAPIView.as_view(), name='follow'),
+    path('user/unfollow/', views.UnfollowAPIView.as_view(), name='unfollow'),
+    path('user/accept/', views.AcceptFriendshipAPIView.as_view(),
+        name='accept'),
 ]

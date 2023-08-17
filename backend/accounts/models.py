@@ -59,13 +59,16 @@ class User(AbstractBaseUser, PermissionsMixin):
                                 null=True)
     email = models.EmailField(unique=True)
     avatar = models.ImageField(upload_to='avatars', blank=True, null=True)
-
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    friendships = models.ManyToManyField('self',
+                                         through='Friendship',
+                                         symmetrical=False,
+                                         related_name="followed_by")
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -86,3 +89,41 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.first_name and self.last_name:
             return f"{self.first_name} {self.last_name}"
         return ''
+
+    def follow(self, to_follow, status='PE'):
+        if self == to_follow:
+            return
+
+        friendship, created = Friendship.objects.get_or_create(
+            follower=self,
+            followed=to_follow)
+
+        return friendship, created
+
+    def unfollow(self, to_unfollow):
+        friendship = Friendship.objects.filter(follower=self,
+                                               followed=to_unfollow)
+        friendship_exists = friendship.exists()
+        if friendship_exists:
+            friendship.delete()
+
+        return friendship_exists
+
+
+class Friendship(models.Model):
+    class Status(models.TextChoices):
+        PENDING = 'PE', 'Pending'
+        ACCEPTED = 'AC', 'Accepted'
+        REJECTED = 'RE', 'Rejected'
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    follower = models.ForeignKey(User,
+                                 related_name='following',
+                                 on_delete=models.CASCADE)
+    followed = models.ForeignKey(User,
+                                 related_name='followers',
+                                 on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=2,
+                              choices=Status.choices,
+                              default=Status.PENDING)

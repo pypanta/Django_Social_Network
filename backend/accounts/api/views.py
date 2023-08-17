@@ -129,3 +129,66 @@ class UserSearchAPIView(generics.ListAPIView):
     search_fields = ['first_name', 'last_name', 'username',
                      'email', 'posts__body']
     ordering_fields = ['first_name', 'last_name', 'username', 'email']
+
+
+class FollowAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request):
+        user_id = request.data.get('id')
+        to_follow = User.objects.filter(id=user_id).first()
+        if to_follow:
+            user = request.user
+            friendship, created = user.follow(to_follow)
+            if created:
+                return Response({'message': f'Follow: {to_follow}'},
+                                status=status.HTTP_200_OK)
+            if friendship and not created:
+                return Response(
+                    {'message': f'You already follow {to_follow}'})
+        return Response({'message': 'User not found'},
+                        status=status.HTTP_404_NOT_FOUND)
+
+
+class UnfollowAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request):
+        user_id = request.data.get('id')
+        to_unfollow = User.objects.filter(id=user_id).first()
+        if to_unfollow:
+            user = request.user
+            friendship = user.unfollow(to_unfollow)
+            if friendship:
+                return Response({'message': f'Unfollow: {to_unfollow}'},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response(
+                    {'message': f'{to_unfollow} is not in followed users'})
+        return Response({'message': 'User not found'},
+                        status=status.HTTP_404_NOT_FOUND)
+
+
+class AcceptFriendshipAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request):
+        user = request.user
+        follower_id = request.data.get('id')
+        status = request.data.get('status')
+        friendship_request = user.followers.filter(
+            follower__id=follower_id)
+
+        if friendship_request.exists():
+            friend = friendship_request.first()
+            if friend.status == 'PE' and status == 'accept':
+                friend.status = 'AC'
+                friend.save()
+                return Response({'message': 'Friendship request is accepted'})
+            elif friend.status == 'PE' and status == 'reject':
+                friend.delete()
+                return Response({'message': 'Friendship request is rejected'})
+            else:
+                return Response(
+                    {'message': 'Friendship request is on pending'})
+        return Response({'message': 'Friendship not found'})

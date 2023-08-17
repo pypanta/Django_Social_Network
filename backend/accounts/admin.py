@@ -1,10 +1,16 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
-from .models import User
+from .models import User, Friendship
+
+
+class FriendshipInline(admin.StackedInline):
+    model = Friendship
+    fk_name = 'followed'
 
 
 class UserAdmin(BaseUserAdmin):
+    inlines = [FriendshipInline]
     list_display = ('email', 'full_name', 'is_active')
     list_display_links = ('full_name', 'email')
     list_filter = ('email', 'is_staff', 'is_active')

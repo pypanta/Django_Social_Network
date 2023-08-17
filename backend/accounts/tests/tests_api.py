@@ -100,3 +100,45 @@ class AccountAPITestCase(APITestCase):
             [u['username'] for u in response.data],
             ['user4', 'user3', 'user2', 'user1']
         )
+
+    def test_follow_user_api_view(self):
+        self._login()
+        self._create_user(1)
+        u1 = User.objects.filter(email__icontains='test').first()
+        u2 = User.objects.filter(email__icontains='user').first()
+        url = reverse('accounts:follow')
+        payload = {'id': u2.id}
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(u1.following.count(), 1)
+        self.assertEqual(u2.followers.count(), 1)
+
+    def test_unfollow_user_api_view(self):
+        self._login()
+        self._create_user(1)
+        u1 = User.objects.filter(email__icontains='test').first()
+        u2 = User.objects.filter(email__icontains='user').first()
+        u1.follow(u2)
+        self.assertEqual(u1.following.count(), 1)
+        self.assertEqual(u1.following.first().followed, u2)
+        url = reverse('accounts:unfollow')
+        payload = {'id': u2.id}
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(u1.following.count(), 0)
+
+    def test_accept_friendship_api_view(self):
+        self._login()
+        self._create_user(1)
+        u1 = User.objects.filter(email__icontains='test').first()
+        u2 = User.objects.filter(email__icontains='user').first()
+        u2.follow(u1)
+        self.assertEqual(u1.followers.count(), 1)
+        self.assertEqual(
+            u1.followers.filter(follower__id=u2.id).first().status, 'PE')
+        url = reverse('accounts:accept')
+        payload = {'id': u2.id, 'status': 'accept'}
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            u1.followers.filter(follower__id=u2.id).first().status, 'AC')

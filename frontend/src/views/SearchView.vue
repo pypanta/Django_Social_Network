@@ -61,6 +61,7 @@ import Posts from '@/components/Posts.vue'
 import Trends from '@/components/Trends.vue'
 import fetchData from '@/utils/handleFetch.js'
 import createdBy from '@/utils/createdby.js'
+import userAvatar from "../assets/images/user-avatar.png"
 
 const searchTerm = ref('')
 const searchType = reactive({

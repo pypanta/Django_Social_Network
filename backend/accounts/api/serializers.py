@@ -5,16 +5,48 @@ from ..models import User
 
 class UserSerializer(serializers.ModelSerializer):
     posts = serializers.SerializerMethodField(read_only=True)
+    following = serializers.SerializerMethodField(read_only=True)
+    followers = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
         fields = (
-            'id', 'first_name', 'last_name', 'username',
-            'email', 'date_joined', 'last_login', 'posts'
+            'id', 'first_name', 'last_name', 'username', 'email',
+            'date_joined', 'last_login', 'posts', 'following', 'followers'
         )
 
     def get_posts(self, obj):
         return obj.posts.values()
+
+    def get_following(self, obj):
+        following = []
+        for f in obj.following.all():
+            following.append(
+                {
+                    'id': f.followed.id,
+                    'first_name': f.followed.first_name,
+                    'last_name': f.followed.last_name,
+                    'username': f.followed.username,
+                    'email': f.followed.email,
+                    'status': f.status
+                }
+            )
+        return following
+
+    def get_followers(self, obj):
+        followers = []
+        for f in obj.followers.all():
+            followers.append(
+                {
+                    'id': f.follower.id,
+                    'first_name': f.follower.first_name,
+                    'last_name': f.follower.last_name,
+                    'username': f.follower.username,
+                    'email': f.follower.email,
+                    'status': f.status
+                }
+            )
+        return followers
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
