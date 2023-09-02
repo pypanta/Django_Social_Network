@@ -1,73 +1,18 @@
 <template>
   <Toast />
   <section class="timeline">
-    <div class="user-info">
-      <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
-      <p class="user-info-name">
-        {{ userProfile.username ? userProfile.username : userProfile.email }}
-      </p>
-      <div class="user-info-stats">
-        <a v-if="isLoggedInUser()" @click="showFollowers = !showFollowers">
-          {{ followersCount }} followers
-        </a>
-        <a
-          v-else-if="!isLoggedInUser() && followersCount > 0"
-          @click="showFollowers = !showFollowers"
-        >
-          {{ followersCount }} followers
-        </a>
-        <a v-else>
-          {{ followersCount }} followers
-        </a>
-        <a v-if="isLoggedInUser()" @click="showFollowing = !showFollowing">
-          {{ followingCount }} following
-        </a>
-        <a
-          v-else-if="!isLoggedInUser() && followingCount > 0"
-          @click="showFollowing = !showFollowing"
-        >
-          {{ followingCount }} following
-        </a>
-        <a v-else>
-          {{ followingCount }} following
-        </a>
-        <Friends
-          v-if="showFollowers"
-          :friends="userProfile.followers"
-          :isLoggedInUser="isLoggedInUser()"
-          @close="showFollowers = false"
-          @unfollow="handleFollow"
-          @updateFollowersCount="updateFriends"
-          @friendshipRequest="updateMessage"
-        />
-        <Friends
-          v-if="showFollowing"
-          :friends="userProfile.following"
-          :following="true"
-          :isLoggedInUser="isLoggedInUser()"
-          @close="showFollowing = false"
-          @unfollow="handleFollow"
-        />
-        <a href=#>{{ posts.length }} posts</a>
-      </div>
-      <button
-        v-if="isFollowed && !isLoggedInUser()"
-        @click="handleFollow('unfollow')"
-        class="btn"
-      >
-        Unfollow
-      </button>
-      <button
-        v-else-if="!isLoggedInUser()"
-        @click="handleFollow('follow')"
-        class="btn"
-      >
-        Follow
-      </button>
-    </div>
+    <UserInfo
+      :userProfile="userProfile"
+      :isLoggedInUser="isLoggedInUser"
+      :posts="posts"
+      :followersCount="followersCount"
+      :followingCount="followingCount"
+      @updateFollowers="updateFriends"
+      @updateFollowing="followingCount -= 1"
+    />
 
     <div class="status">
-      <div v-if="isLoggedInUser()" class="status-form">
+      <div v-if="isLoggedInUser" class="status-form">
         <form @submit.prevent="handleSubmit">
           <textarea
             v-model="body"
@@ -98,13 +43,14 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useToastStore } from '@/stores/toast'
+import UserInfo from '@/components/UserInfo.vue'
 import Posts from '@/components/Posts.vue'
 import SuggestedUsers from '@/components/SuggestedUsers.vue'
 import Trends from '@/components/Trends.vue'
 import Friends from '@/components/Friends.vue'
 import Toast from '@/components/Toast.vue'
 import fetchData from '@/utils/handleFetch.js'
-import createdBy from '@/utils/createdby.js'
+import { filterUsername, isAuthenticatedUser } from '@/utils/filters.js'
 import userAvatar from "../assets/images/user-avatar.png"
 import postImage from "../assets/images/post-1.jpg"
 
@@ -124,6 +70,7 @@ const userProfile = reactive({
 const posts = ref([])
 const body = ref('')
 const isFollowed = ref(false)
+const isLoggedInUser = ref(false)
 const followersCount = ref(0)
 const followingCount = ref(0)
 const showFollowers = ref(false)
@@ -149,6 +96,7 @@ onMounted(async () => {
       isFollowed.value = true
     }
   }
+  isLoggedInUser.value = isAuthenticatedUser(userProfile.id, store.userData.id)
 
   // Get followers count
   followersCount.value = userProfile.followers.filter(
@@ -160,9 +108,6 @@ onMounted(async () => {
 
 })
 
-const isLoggedInUser = () => {
-  return userProfile.id === store.userData.id
-}
 
 const handleSubmit = async () => {
   const files = document.querySelector('input[type="file"]')
@@ -182,47 +127,15 @@ const handleSubmit = async () => {
   }
 }
 
-const handleFollow = async (status) => {
-  let url = 'user/follow'
-  let data = userProfile
-  if (status === 'unfollow') {
-    url = 'user/unfollow'
-  } else if (typeof status === 'object') {
-    url = 'user/unfollow'
-    data = status[0]
-  }
-
-  const response = await fetchData(url, 'POST', data)
-  if (response.ok) {
-    if (status === 'follow') {
-      isFollowed.value = true
-      followersCount.value += 1
-      toast.showToast(5000, `Follow ${createdBy(userProfile)}`, 'message-success')
-      // Add user to followers
-      userProfile.followers.push(store.userData)
-    } else if (status[1] === 'following') {
-      // Decrease followingCount only if friendship if accepted
-      if (status[0].status === 'AC') followingCount.value -= 1
-
-      // Remove user from following users
-      userProfile.following = userProfile.following.filter(
-        p => p.id !== status[0].id
-      )
-      toast.showToast(5000, `Unfollow ${createdBy(status[0])}`, 'message-danger')
-    } else {
-      isFollowed.value = false
-      followersCount.value -= 1
-      toast.showToast(5000, `Unfollow ${createdBy(userProfile)}`, 'message-danger')
-      // Remove user from followers
-      userProfile.followers = userProfile.followers.filter(
-        p => p.id !== store.userData.id
-      )
-    }
-  }
-}
-
 const updateFriends = (value) => {
-  followersCount.value += value
+  console.log(value)
+  if (value === 'follow') {
+    followersCount.value += 1
+  } else if (value === 'unfollow') {
+    followersCount.value -= 1
+  } else {
+    followersCount.value += value
+  }
 }
 
 const updateMessage = (value) => {

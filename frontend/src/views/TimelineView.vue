@@ -1,13 +1,10 @@
 <template>
   <section class="timeline">
-    <div class="user-info">
-      <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
-      <p class="user-info-name">{{ store.getUsername }}</p>
-      <div class="user-info-stats">
-        <a href="#">250 friends</a>
-        <a href=#>98 posts</a>
-      </div>
-    </div>
+    <UserInfo
+      :userProfile="store.userData"
+      :friendsCount="store.getFriendsCount"
+      :friends="store.getFriends"
+    />
 
     <div class="status">
       <div class="status-form">
@@ -40,6 +37,7 @@
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import SuggestedUsers from '@/components/SuggestedUsers.vue'
+import UserInfo from '@/components/UserInfo.vue'
 import Posts from '@/components/Posts.vue'
 import Trends from '@/components/Trends.vue'
 import fetchData from '@/utils/handleFetch.js'
@@ -47,7 +45,6 @@ import userAvatar from "../assets/images/user-avatar.png"
 import postImage from "../assets/images/post-1.jpg"
 
 const store = useUserStore()
-
 
 const posts = ref([])
 const body = ref('')
@@ -60,16 +57,6 @@ onMounted(async () => {
     throw response
   }
 })
-
-const createdBy = (user) => {
-  if (user.first_name && user.last_name) {
-    return `${user.first_name} ${user.last_name}`
-  } else if (user.username) {
-    return user.username
-  } else {
-    return user.email
-  }
-}
 
 const handleSubmit = async () => {
   const files = document.querySelector('input[type="file"]')

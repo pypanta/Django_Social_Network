@@ -1,3 +1,5 @@
+from django.db.models import Q
+
 from rest_framework import filters, generics, status
 from rest_framework.response import Response
 
@@ -31,11 +33,15 @@ class PostListAPIView(generics.ListCreateAPIView):
         return obj
 
     def get_queryset(self):
-        queryset = Post.objects.all()
         obj = self.get_object()
-
         if obj is not None:
-            return queryset.filter(created_by=obj)
+            return Post.objects.filter(created_by=obj)
+
+        # Filter user and his friends posts only
+        queryset = Post.objects.filter(
+            Q(created_by=self.request.user) |
+            Q(created_by_id__in=self.request.user.friendships.all())
+        )
 
         return queryset
 

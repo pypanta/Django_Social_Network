@@ -2,7 +2,7 @@
   <article v-for="post in posts" key="post.id" class="status-post">
     <section class="status-post-info">
       <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
-      <p class="status-post-info-name">{{ createdBy(post.created_by) }}</p>
+      <p class="status-post-info-name">{{ filterUsername(post.created_by) }}</p>
       <p class="status-post-info-time">{{ post.time_ago }} ago.</p>
     </section>
     <section class="status-post-body">
@@ -41,7 +41,7 @@
 </template>
 
 <script setup>
-import createdBy from '@/utils/createdby.js'
+import { filterUsername } from '@/utils/filters.js'
 import userAvatar from "../assets/images/user-avatar.png"
 
 const props = defineProps(['posts'])

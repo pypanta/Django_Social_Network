@@ -8,7 +8,7 @@
             <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
             <div class="modal-links">
               <router-link :to="{ name: 'profile', params: { id: friend.id }}">
-                {{ createdBy(friend) }}
+                {{ filterUsername(friend) }}
               </router-link>
               <div v-if="!following">
                 <a
@@ -36,7 +36,7 @@
             <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
             <div class="modal-links">
               <router-link :to="{ name: 'profile', params: { id: friend.id }}">
-                {{ createdBy(friend) }}
+                {{ filterUsername(friend) }}
               </router-link>
               <a
                 v-if="following && isLoggedInUser"
@@ -54,19 +54,20 @@
 </template>
 
 <script setup>
-import createdBy from '@/utils/createdby.js'
+import { filterUsername } from '@/utils/filters.js'
 import fetchData from '@/utils/handleFetch.js'
 import userAvatar from "../assets/images/user-avatar.png"
 
 const props = defineProps(['friends', 'following', 'isLoggedInUser'])
-const emit = defineEmits(['friendId'])
+
+const emit = defineEmits(['updateFollowersCount'])
 
 const handleFriendshipRequest = async (id, status) => {
   const response = await fetchData(
     'user/accept', 'POST', {id: id, status: status}
   )
   if (response.ok) {
-    const user = createdBy(props.friends.filter(u => u.id === id)[0])
+    const user = filterUsername(props.friends.filter(u => u.id === id)[0])
     if (status === 'accept') {
       props.friends = props.friends.filter(f => {
         if (f.id === id) f.status = 'AC'

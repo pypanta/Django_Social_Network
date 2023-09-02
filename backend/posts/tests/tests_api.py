@@ -27,9 +27,11 @@ class PostAPITestCase(APITestCase):
         Post.objects.bulk_create(posts)
 
     def test_post_list_view(self):
+        self._create_posts(count=5)
         url = reverse('posts:posts')
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 5)
 
     def test_post_create_view(self):
         url = reverse('posts:posts')

@@ -35,7 +35,7 @@
           <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
           <p class="user-info-name">
           <router-link :to="{ name: 'profile', params: {id: user.id }}">
-            {{ createdBy(user) }}
+            {{ filterUsername(user) }}
           </router-link>
           </p>
           <div class="user-info-stats">
@@ -60,7 +60,7 @@ import SuggestedUsers from '@/components/SuggestedUsers.vue'
 import Posts from '@/components/Posts.vue'
 import Trends from '@/components/Trends.vue'
 import fetchData from '@/utils/handleFetch.js'
-import createdBy from '@/utils/createdby.js'
+import { filterUsername } from '@/utils/filters.js'
 import userAvatar from "../assets/images/user-avatar.png"
 
 const searchTerm = ref('')

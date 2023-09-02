@@ -10,7 +10,10 @@ export const useUserStore = defineStore('user', () => {
     first_name: '',
     last_name: '',
     username: '',
-    email: ''
+    email: '',
+    followers: [],
+    following: [],
+    posts: []
   });
 
   const getUsername = computed(() => {
@@ -21,6 +24,34 @@ export const useUserStore = defineStore('user', () => {
     } else {
       return userData.email;
     }
+  })
+
+  const getFriendsCount = computed(() => {
+    const followersIds = []
+    userData.followers.forEach((f) => followersIds.push(f.id))
+
+    let count = 0
+    for (const i in userData.following) {
+      if (followersIds.includes(userData.following[i].id)) {
+        count += 1
+      }
+    }
+    return count
+  })
+
+  const getFriends = computed(() => {
+    const followersIds = []
+    userData.followers.forEach((f) => followersIds.push(f.id))
+
+    let friends = []
+    for (const i in userData.following) {
+      if (followersIds.includes(userData.following[i].id)) {
+        const follower = userData.followers.filter(
+          f => f.id === userData.following[i].id)[0]
+        friends.push(follower)
+      }
+    }
+    return friends
   })
 
   async function getUser() {
@@ -46,5 +77,5 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { isAuthenticated, message, userData, getUser, getUsername }
+  return { isAuthenticated, message, userData, getUser, getUsername, getFriendsCount, getFriends }
 })
