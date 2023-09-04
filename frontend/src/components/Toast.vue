@@ -12,7 +12,7 @@ const store = useToastStore()
 
 <style scoped>
 .message {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   right: 20px;
   padding: 20px;

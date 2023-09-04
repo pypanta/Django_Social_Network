@@ -13,12 +13,21 @@ def upload_post_image(instance, filename):
     return f"post/{user}/{filename}"
 
 
+class Like(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                   related_name='likes',
+                                   on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     body = models.TextField(blank=True, null=True)
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
                                    related_name='posts',
                                    on_delete=models.CASCADE)
+    likes = models.ManyToManyField(Like, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

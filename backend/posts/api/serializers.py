@@ -14,10 +14,19 @@ class PostImageSerializer(serializers.ModelSerializer):
 class PostSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
     post_images = PostImageSerializer(many=True, required=False)
+    likes_count = serializers.SerializerMethodField()
+    liked_by = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ('id', 'body', 'created_by', 'time_ago', 'post_images')
+        fields = ('id', 'body', 'created_by', 'likes_count',
+                  'liked_by', 'time_ago', 'post_images')
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
+
+    def get_liked_by(self, obj):
+        return obj.likes.values()
 
     def create(self, validated_data):
         data = {

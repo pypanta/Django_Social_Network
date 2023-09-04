@@ -2,12 +2,13 @@ from django.db.models import Q
 
 from rest_framework import filters, generics, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from accounts.api.authentication import JWTAuthentication
 from accounts.api.serializers import UserSerializer
 from accounts.models import User
 
-from ..models import Post
+from ..models import Like, Post
 from .serializers import PostSerializer
 
 
@@ -84,3 +85,19 @@ class PostSearchAPIView(generics.ListAPIView):
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     ordering_fields = ['body', 'created_by', 'created_at']
     search_fields = ['body', 'created_by__username']
+
+
+class LikeAPIView(APIView):
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request, post_id=None):
+        post = Post.objects.get(id=post_id)
+        if post.created_by.id == request.user.id:
+            return Response({"message": "You can't like your own post"})
+        liked = post.likes.filter(created_by=request.user).first()
+        if liked is None:
+            like = Like.objects.create(created_by=request.user)
+            post.likes.add(like)
+            return Response({'message': 'Liked'})
+        liked.delete()
+        return Response({'message': 'Unliked'})
