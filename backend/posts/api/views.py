@@ -78,6 +78,16 @@ class PostListAPIView(generics.ListCreateAPIView):
                         headers=headers)
 
 
+class PostDetailAPIView(generics.RetrieveAPIView):
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+    authentication_classes = [JWTAuthentication]
+    lookup_field = 'id'
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
 class PostSearchAPIView(generics.ListAPIView):
     authentication_classes = [JWTAuthentication]
     queryset = Post.objects.all()

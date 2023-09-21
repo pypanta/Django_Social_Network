@@ -399,8 +399,18 @@ main {
   gap: var(--5px);
 }
 
-.status-post-footer > div > span {
+.status-post-footer > div > span,
+.status-post-footer > div > a {
   align-self: center;
+}
+
+.status-post-footer > div > a {
+  color: hsl(0, 0%, 0%);
+}
+
+.status-post-footer > div > a:hover,
+.status-post-footer > div > a:focus {
+  color: hsl(0, 0%, 30%);
 }
 
 .status-post-icon {

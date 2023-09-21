@@ -21,6 +21,15 @@ class Like(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
 
+class Comment(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    body = models.TextField(blank=True, null=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                   related_name='comments',
+                                   on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class Post(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     body = models.TextField(blank=True, null=True)
@@ -28,6 +37,7 @@ class Post(models.Model):
                                    related_name='posts',
                                    on_delete=models.CASCADE)
     likes = models.ManyToManyField(Like, blank=True)
+    comments = models.ManyToManyField(Comment, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

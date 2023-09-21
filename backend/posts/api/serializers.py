@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from accounts.api.serializers import UserSerializer
 
-from ..models import Post, PostImage
+from ..models import Comment, Post, PostImage
 
 
 class PostImageSerializer(serializers.ModelSerializer):
@@ -11,16 +11,23 @@ class PostImageSerializer(serializers.ModelSerializer):
         fields = ('id', 'image', 'post')
 
 
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id', 'body', 'created_by', 'created_at')
+
+
 class PostSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)
     post_images = PostImageSerializer(many=True, required=False)
+    comments = CommentSerializer(many=True, read_only=True)
     likes_count = serializers.SerializerMethodField()
     liked_by = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
         fields = ('id', 'body', 'created_by', 'likes_count',
-                  'liked_by', 'time_ago', 'post_images')
+                  'liked_by', 'time_ago', 'post_images', 'comments')
 
     def get_likes_count(self, obj):
         return obj.likes.count()
