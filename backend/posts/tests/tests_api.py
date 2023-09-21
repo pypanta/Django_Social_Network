@@ -160,3 +160,11 @@ class PostAPITestCase(APITestCase):
         self.assertEqual(post.likes.count(), 0)
         self.assertEqual(response.data['message'],
                          "You can't like your own post")
+
+    def test_post_detail_api_view(self):
+        self._create_posts(count=1)
+        post = Post.objects.first()
+        url = reverse('posts:post_detail', args=[post.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'].replace('-', ''), post.id.hex)
