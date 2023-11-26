@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 
 from accounts.models import User
 
-from ..models import Post
+from ..models import Comment, Post
 
 
 class PostAPITestCase(APITestCase):
@@ -168,3 +168,38 @@ class PostAPITestCase(APITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data['id'].replace('-', ''), post.id.hex)
+
+
+class CommentAPITestCase(APITestCase):
+    def setUp(self):
+        # Create user
+        self.user = User.objects.create(email='test@email.com')
+        self.user.set_password('test1234')
+        self.user.save()
+
+        # Login user
+        url = reverse('accounts:login')
+        payload = {'email': self.user.email, 'password': 'test1234'}
+        self.client.post(url, payload, format='json')
+
+        # Create post
+        self.post = Post.objects.create(body='Test post', created_by=self.user)
+
+        # Create 5 comments
+        for i in range(5):
+             comment = Comment.objects.create(body=f"Test comment {i}",
+                                              created_by=self.user)
+             self.post.comments.add(comment)
+
+    def test_comment_list_view(self):
+        url = reverse('posts:comment', args=[self.post.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 5)
+
+    def test_comment_create_view(self):
+        url = reverse('posts:comment', args=[self.post.id])
+        payload = {'body': 'Test comment'}
+        response = self.client.post(url, payload)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.json()['body'], 'Test comment')

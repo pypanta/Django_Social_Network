@@ -1,4 +1,5 @@
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
 
 from rest_framework import filters, generics, status
 from rest_framework.response import Response
@@ -8,8 +9,8 @@ from accounts.api.authentication import JWTAuthentication
 from accounts.api.serializers import UserSerializer
 from accounts.models import User
 
-from ..models import Like, Post
-from .serializers import PostSerializer
+from ..models import Comment, Like, Post
+from .serializers import CommentSerializer, PostSerializer
 
 
 class PostListAPIView(generics.ListCreateAPIView):
@@ -111,3 +112,28 @@ class LikeAPIView(APIView):
             return Response({'message': 'Liked'})
         liked.delete()
         return Response({'message': 'Unliked'})
+
+
+class CommentAPIView(generics.ListCreateAPIView):
+    """API view for listing and creating comments on posts."""
+    queryset = Comment.objects.all()
+    authentication_classes = [JWTAuthentication]
+    serializer_class = CommentSerializer
+
+    def perform_create(self, serializer):
+        """Save the newly created comment with the 'created_by' and
+        'post' fields.
+        """
+        post_id = self.kwargs.get('post_id')
+        post = get_object_or_404(Post, id=post_id)
+        serializer.save(created_by=self.request.user, post=post)
+
+    def create(self, request, *args, **kwargs):
+        """Create a new comment."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data,
+                        status=status.HTTP_201_CREATED,
+                        headers=headers)

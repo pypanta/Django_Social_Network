@@ -7,6 +7,8 @@
     />
 
     <div class="status">
+      <Posts :posts="post" />
+      <Comments :comments="comments" />
       <div class="status-form">
         <form @submit.prevent="handleSubmit">
           <textarea
@@ -15,15 +17,10 @@
             placeholder="What are you thinking about?"
           ></textarea>
           <div class="form-group">
-            <div>
-              <label for="myfile">Attach image:</label>
-              <input type="file" multiple id="myfile" name="myfile">
-            </div>
-            <input type="submit" value="Post" class="btn">
+            <input type="submit" value="Comment" class="btn">
           </div>
         </form>
       </div>
-      <Posts :posts="post" />
     </div>
 
     <div class="suggestions">
@@ -40,6 +37,7 @@ import { useUserStore } from '@/stores/user'
 import SuggestedUsers from '@/components/SuggestedUsers.vue'
 import UserInfo from '@/components/UserInfo.vue'
 import Posts from '@/components/Posts.vue'
+import Comments from '@/components/Comments.vue'
 import Trends from '@/components/Trends.vue'
 import fetchData from '@/utils/handleFetch.js'
 import userAvatar from "../assets/images/user-avatar.png"
@@ -49,30 +47,30 @@ const route = useRoute()
 const store = useUserStore()
 
 const post = ref([])
+const comments = ref([])
 const body = ref('')
 
 onMounted(async () => {
   const response = await fetchData(`posts/post/${route.params.id}`, 'GET')
   if (response.ok) {
     post.value.push(await response.json())
+    comments.value = post.value[0].comments
   } else {
     throw response
   }
 })
 
 const handleSubmit = async () => {
-  const files = document.querySelector('input[type="file"]')
-  const formData  = new FormData()
-  formData.append('body', body.value)
-  for (let i of files.files) {
-    formData.append('images', i)
-  }
-  const response = await fetchData('posts', 'POST', formData)
+  const data = {'body': body.value}
+  const response = await fetchData(
+    `posts/${post.value[0].id}/comment`,
+    'POST',
+    data
+  )
   if (response.ok) {
     const data = await response.json()
-    posts.value.unshift(data)
+    comments.value.push(data)
     body.value = ''
-    files.value = null
   } else {
     throw response
   }

@@ -345,9 +345,12 @@ main {
 }
 
 .status-form > form > .form-group > .btn {
-  margin-left: auto;
   background-color: hsl(210, 100%, 50%);
 
+}
+
+.status-form > form > .form-group > .btn:not(:only-child) {
+  margin-left: auto;
 }
 
 .status-form > form > .form-group > .btn:hover,

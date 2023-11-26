@@ -12,9 +12,17 @@ class PostImageSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    created_by = UserSerializer(read_only=True)
+
     class Meta:
         model = Comment
-        fields = ('id', 'body', 'created_by', 'created_at')
+        fields = ('id', 'body', 'created_by', 'time_ago')
+
+    def create(self, validated_data):
+        post = validated_data.pop('post')
+        comment = Comment.objects.create(**validated_data)
+        post.comments.add(comment)
+        return comment
 
 
 class PostSerializer(serializers.ModelSerializer):

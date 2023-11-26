@@ -10,6 +10,7 @@ urlpatterns = [
     path('post/<uuid:id>/', views.PostDetailAPIView.as_view(),
         name='post_detail'),
     path('<uuid:post_id>/like/', views.LikeAPIView.as_view(), name='like'),
+    path('<uuid:post_id>/comment/', views.CommentAPIView.as_view(), name='comment'),
     path('<uuid:user_id>/', views.PostListAPIView.as_view(),
         name='user_posts'),
 ]
