@@ -7,4 +7,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.api.urls')),
     path('api/posts/', include('posts.api.urls')),
+    path('api/chat/', include('chat.api.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

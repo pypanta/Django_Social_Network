@@ -62,6 +62,12 @@
     >
       Follow
     </button>
+    <button
+      v-if="!isLoggedInUser"
+      @click="startConversation"
+      class="btn-small">
+        Start conversation
+    </button>
   </div>
   <div v-else class="user-info">
     <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
@@ -86,7 +92,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { useToastStore } from '@/stores/toast'
 import Friends from '@/components/Friends.vue'
@@ -108,6 +114,7 @@ const props = defineProps({
 const emit = defineEmits(['updateFollowers', 'updateFollowing'])
 
 const route = useRoute()
+const router = useRouter()
 const store = useUserStore()
 const toast = useToastStore()
 
@@ -161,6 +168,15 @@ const handleFollow = async (status) => {
         p => p.id !== store.userData.id
       )
     }
+  }
+}
+
+const startConversation = async () => {
+  const response = await fetchData(`chat/${route.params.id}/create`, 'POST')
+  if (response.ok) {
+    router.push({name: 'chat'})
+  } else {
+    throw response
   }
 }
 </script>

@@ -1,0 +1,37 @@
+import uuid
+
+from django.conf import settings
+from django.db import models
+from django.utils.timesince import timesince
+
+
+class Conversation(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL,
+                                   related_name='conversations')
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-modified_at',)
+
+    def modified_at_time_ago(self):
+        return timesince(self.created_at)
+
+
+class ConversationMessage(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    conversation = models.ForeignKey(Conversation,
+                                     related_name='messages',
+                                     on_delete=models.CASCADE)
+    body = models.TextField()
+    sent_to = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                related_name='received_messages',
+                                on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                   related_name='sent_messages',
+                                   on_delete=models.CASCADE)
+
+    def created_at_time_ago(self):
+        return timesince(self.created_at)

@@ -4,10 +4,10 @@ import HomeView from '../views/HomeView.vue'
 import SignupView from '../views/SignupView.vue'
 import LoginView from '../views/LoginView.vue'
 import TimelineView from '../views/TimelineView.vue'
-import MessagesView from '../views/MessagesView.vue'
 import SearchView from '../views/SearchView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import PostView from '../views/PostView.vue'
+import ChatView from '../views/ChatView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,9 +43,9 @@ const router = createRouter({
       component: TimelineView
     },
     {
-      path: '/messages',
-      name: 'messages',
-      component: MessagesView
+      path: '/chat',
+      name: 'chat',
+      component: ChatView
     },
     {
       path: '/search',

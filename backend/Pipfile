@@ -11,10 +11,12 @@ pillow = "*"
 django-cors-headers = "*"
 pyjwt = "*"
 django-filter = "*"
+pipfile = "*"
 
 [dev-packages]
 ipython = "*"
+pipfile = "*"
 
 [requires]
 python_version = "3.11"
-python_full_version = "3.11.4"
+python_full_version = "3.11.2"
