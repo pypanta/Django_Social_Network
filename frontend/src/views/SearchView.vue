@@ -39,8 +39,17 @@
           </router-link>
           </p>
           <div class="user-info-stats">
-            <a href="#">250 friends</a>
-            <a href=#>98 posts</a>
+            <a @click="showFollowers = !showFollowers">
+              {{ user.followers.length }} friends
+            </a>
+            <Friends
+              v-if="showFollowers"
+              :friends="user.followers"
+              @close="showFollowers = false"
+            />
+            <router-link :to="{ name: 'profile', params: { id: user.id }}">
+              {{ user.posts.length }} posts
+            </router-link>
           </div>
         </div>
       </div>
@@ -59,6 +68,7 @@ import { ref, reactive } from 'vue'
 import SuggestedUsers from '@/components/SuggestedUsers.vue'
 import Posts from '@/components/Posts.vue'
 import Trends from '@/components/Trends.vue'
+import Friends from '@/components/Friends.vue'
 import fetchData from '@/utils/handleFetch.js'
 import { filterUsername } from '@/utils/filters.js'
 import userAvatar from "../assets/images/user-avatar.png"
@@ -72,6 +82,7 @@ const selectedUserFilter = ref('')
 const selectedPostFilter = ref('')
 const users = ref([])
 const posts = ref([])
+const showFollowers = ref(false)
 
 function generateURL(urlPoint) {
   let url = null;

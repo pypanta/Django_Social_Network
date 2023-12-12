@@ -60,7 +60,7 @@ import userAvatar from "../assets/images/user-avatar.png"
 
 const props = defineProps(['friends', 'following', 'isLoggedInUser'])
 
-const emit = defineEmits(['updateFollowersCount'])
+const emit = defineEmits(['updateFollowersCount', 'close'])
 
 const handleFriendshipRequest = async (id, status) => {
   const response = await fetchData(
