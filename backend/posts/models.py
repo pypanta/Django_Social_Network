@@ -2,6 +2,7 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 from django.utils.timesince import timesince
 
 
@@ -72,3 +73,38 @@ class PostImage(models.Model):
         if self.image:
             return self.image.url
         return ''
+
+
+class TagQuerySet(models.QuerySet):
+    def all_tags(self):
+        return self.annotate(
+            num_posts=models.Count('posts')
+        ).order_by('-num_posts')
+
+    def last_24_hours(self):
+        return self.filter(created_at__date=timezone.now()
+                   ).annotate(num_posts=models.Count('posts')
+                   ).order_by('-num_posts')
+
+
+class TagManager(models.Manager):
+    def get_queryset(self):
+        return TagQuerySet(self.model, using=self._db)
+
+    def all_tags(self):
+        return self.get_queryset().all_tags()
+
+    def last_24_hours(self):
+        return self.get_queryset().last_24_hours()
+
+
+class Tag(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=50, unique=True)
+    posts = models.ManyToManyField(Post, related_name='tags', blank=True)
+    created_at = models.DateTimeField(auto_now=True)
+
+    objects = TagManager()
+
+    def __str__(self):
+        return self.name

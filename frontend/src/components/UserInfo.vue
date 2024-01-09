@@ -46,7 +46,7 @@
         @close="showFollowing = false"
         @unfollow="handleFollow"
       />
-      <a href=#>{{ posts.length }} posts</a>
+      <a href=#>{{ userProfile.posts_count }} posts</a>
     </div>
     <button
       v-if="isFollowed && !isLoggedInUser"

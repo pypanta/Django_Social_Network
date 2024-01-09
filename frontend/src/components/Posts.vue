@@ -7,7 +7,7 @@
       <p class="status-post-info-time">{{ post.time_ago }} ago.</p>
     </section>
     <section class="status-post-body">
-      <p>{{ post.body }}</p>
+      <p id="postBody" v-html="post.body"></p>
       <div
         v-if="post.post_images.length"
         v-for="image in post.post_images" :key="image.id"
@@ -47,6 +47,7 @@
 </template>
 
 <script setup>
+import { ref, onUpdated } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useToastStore } from '@/stores/toast'
 import Toast from '@/components/Toast.vue'
@@ -58,6 +59,17 @@ const props = defineProps(['posts'])
 
 const store = useUserStore()
 const toast = useToastStore()
+
+
+onUpdated(() => {
+  // Replace all words in post that starts with # symbol with a link
+  if (props.posts.length) {
+  for (let i = 0; i < props.posts.length; i++) {
+    props.posts[i].body = props.posts[i].body.replace(/(?<=[#])(\w+)/g,
+      '<a href="/tag/$1">$1</a>')
+  }
+  }
+})
 
 const isLiked = (post_id) => {
   const post = props.posts.filter(p => p.id === post_id)[0]
@@ -106,6 +118,10 @@ const pluralize = (num, word, suffix='s') => {
     return `${num} ${word}${suffix}`
   }
   return `${num} ${word}`
+}
+
+const filterPostsByTag = (tag) => {
+  console.log('clciked')
 }
 </script>
 

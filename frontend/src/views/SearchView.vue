@@ -58,7 +58,7 @@
 
     <div class="suggestions">
       <SuggestedUsers />
-      <Trends />
+      <Trends @tagPosts="(value) => posts = value[0]" />
     </div>
   </section>
 </template>

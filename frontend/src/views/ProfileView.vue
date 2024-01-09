@@ -33,7 +33,7 @@
 
     <div class="suggestions">
       <SuggestedUsers />
-      <Trends />
+      <Trends @tagPosts="(value) => posts = value[0]" />
     </div>
   </section>
 </template>
@@ -51,6 +51,7 @@ import Friends from '@/components/Friends.vue'
 import Toast from '@/components/Toast.vue'
 import fetchData from '@/utils/handleFetch.js'
 import { filterUsername, isAuthenticatedUser } from '@/utils/filters.js'
+import extractTags from '@/utils/extractTagsFromPost.js'
 import userAvatar from "../assets/images/user-avatar.png"
 import postImage from "../assets/images/post-1.jpg"
 
@@ -65,7 +66,8 @@ const userProfile = reactive({
   username: '',
   email: '',
   following: [],
-  followers: []
+  followers: [],
+  posts_count: 0
 })
 const posts = ref([])
 const body = ref('')
@@ -116,6 +118,8 @@ const handleSubmit = async () => {
   for (let i of files.files) {
     formData.append('images', i)
   }
+  const tags = extractTags(formData.get('body'))
+  formData.append('tags', tags)
   const response = await fetchData('posts', 'POST', formData)
   if (response.ok) {
     const data = await response.json()

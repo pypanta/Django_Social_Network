@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from accounts.api.serializers import UserSerializer
 
-from ..models import Comment, Post, PostImage
+from ..models import Comment, Post, PostImage, Tag
 
 
 class PostImageSerializer(serializers.ModelSerializer):
@@ -61,3 +61,11 @@ class PostSerializer(serializers.ModelSerializer):
                 ]
             )
         return post
+
+
+class TagSerializer(serializers.ModelSerializer):
+    posts = PostSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Tag
+        fields = ('id', 'name', 'posts')

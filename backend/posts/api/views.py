@@ -9,8 +9,8 @@ from accounts.api.authentication import JWTAuthentication
 from accounts.api.serializers import UserSerializer
 from accounts.models import User
 
-from ..models import Comment, Like, Post
-from .serializers import CommentSerializer, PostSerializer
+from ..models import Comment, Like, Post, Tag
+from .serializers import CommentSerializer, PostSerializer, TagSerializer
 
 
 class PostListAPIView(generics.ListCreateAPIView):
@@ -64,7 +64,7 @@ class PostListAPIView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         # serializer.save(created_by=self.request.user,
         #                 images=self.request.data.get('images'))
-        serializer.save(
+        return serializer.save(
             created_by=self.request.user,
             images=[i for i in self.request.data.getlist('images')]
         )
@@ -72,7 +72,18 @@ class PostListAPIView(generics.ListCreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        post = self.perform_create(serializer)
+        # create tags
+        post_tags = request.data.get('tags')
+        if post_tags:
+            for post_tag in post_tags.split(','):
+                tag = Tag.objects.filter(name=post_tag).first()
+                if tag:
+                    tag.posts.add(post)
+                    tag.save()
+                else:
+                    new_tag = Tag.objects.create(name=post_tag)
+                    new_tag.posts.add(post)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED,
@@ -137,3 +148,16 @@ class CommentAPIView(generics.ListCreateAPIView):
         return Response(serializer.data,
                         status=status.HTTP_201_CREATED,
                         headers=headers)
+
+
+class TagListAPIView(generics.ListAPIView):
+    queryset = Tag.objects.last_24_hours()
+    authentication_classes = [JWTAuthentication]
+    serializer_class = TagSerializer
+
+
+class TagDetailAPIView(generics.RetrieveAPIView):
+    queryset = Tag.objects.all()
+    lookup_field = 'name'
+    authentication_classes = [JWTAuthentication]
+    serializer_class = TagSerializer

@@ -504,6 +504,7 @@ main {
 
 .trends-group {
   display: flex;
+  justify-content: space-between;
   gap: var(--20px);
 }
 

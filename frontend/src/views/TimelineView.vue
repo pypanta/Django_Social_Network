@@ -28,7 +28,7 @@
 
     <div class="suggestions">
       <SuggestedUsers />
-      <Trends />
+      <Trends @tagPosts="(value) => posts = value[0]" />
     </div>
   </section>
 </template>
@@ -41,6 +41,7 @@ import UserInfo from '@/components/UserInfo.vue'
 import Posts from '@/components/Posts.vue'
 import Trends from '@/components/Trends.vue'
 import fetchData from '@/utils/handleFetch.js'
+import extractTags from '@/utils/extractTagsFromPost.js'
 import userAvatar from "../assets/images/user-avatar.png"
 import postImage from "../assets/images/post-1.jpg"
 
@@ -65,6 +66,8 @@ const handleSubmit = async () => {
   for (let i of files.files) {
     formData.append('images', i)
   }
+  const tags = extractTags(formData.get('body'))
+  formData.append('tags', tags)
   const response = await fetchData('posts', 'POST', formData)
   if (response.ok) {
     const data = await response.json()

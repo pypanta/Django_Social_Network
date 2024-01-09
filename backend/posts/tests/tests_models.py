@@ -4,7 +4,7 @@ from django.test import Client, TestCase
 
 from accounts.models import User
 
-from ..models import Comment, Post, PostImage
+from ..models import Comment, Post, PostImage, Tag
 
 
 class PostModelTestCase(TestCase):
@@ -46,3 +46,18 @@ class CommentModelTestCase(TestCase):
         self.assertEqual(comment.body, 'Test comment')
         self.assertEqual(self.post.comments.count(), 1)
         self.assertIn(comment, self.post.comments.all())
+
+
+class TagModelTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create(email='test@email.com',
+                                        password='test1234')
+        self.post = Post.objects.create(body='Test post',
+                                        created_by=self.user)
+
+    def test_create_tag(self):
+        tag = Tag.objects.create(name='test')
+        tag.posts.add(self.post)
+        self.assertEqual(Tag.objects.count(), 1)
+        self.assertEqual(tag.name, 'test'),
+        self.assertEqual(tag.posts.count(), 1)

@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 
 from accounts.models import User
 
-from ..models import Comment, Post
+from ..models import Comment, Post, Tag
 
 
 class PostAPITestCase(APITestCase):
@@ -203,3 +203,44 @@ class CommentAPITestCase(APITestCase):
         response = self.client.post(url, payload)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(response.json()['body'], 'Test comment')
+
+
+class TagAPITestCase(APITestCase):
+    def setUp(self):
+        # Create user
+        self.user = User.objects.create(email='test@email.com')
+        self.user.set_password('test1234')
+        self.user.save()
+
+        # Login user
+        url = reverse('accounts:login')
+        payload = {'email': self.user.email, 'password': 'test1234'}
+        self.client.post(url, payload, format='json')
+
+        # Create tag
+        self.tag = Tag.objects.create(name='test')
+
+    def test_tag_list_api_view(self):
+        url = reverse('posts:tags')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['name'], 'test')
+        self.assertEqual(len(response.data[0]['posts']), 0)
+
+    def test_tag_detail_api_view(self):
+        url = reverse('posts:tag-detail', args=[self.tag.name])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['id'], str(self.tag.id))
+        self.assertEqual(response.data['name'], 'test')
+
+    def test_create_post_with_tags(self):
+        url = reverse('posts:posts')
+        payload = {'body': 'Test post with tags', 'tags': 'test,django,vuejs'}
+        response = self.client.post(url, payload)
+        post = Post.objects.get(id=response.data['id'])
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(response.data['body'], 'Test post with tags')
+        self.assertEqual(Tag.objects.count(), 3)
+        self.assertEqual(list(Tag.objects.all()), list(post.tags.all()))
