@@ -1,5 +1,7 @@
 import uuid
+from pathlib import Path
 
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -13,6 +15,13 @@ def upload_user_avatar(instance, filename):
         user = instance.username
     else:
         user = instance.email.split('@')[0]
+
+    # Removes existing user avatar
+    avatar_path = Path(f"{settings.MEDIA_ROOT}/avatar/{user}")
+    if avatar_path.exists():
+        for image in avatar_path.iterdir():
+            image.unlink()
+
     return f"avatar/{user}/{filename}"
 
 
