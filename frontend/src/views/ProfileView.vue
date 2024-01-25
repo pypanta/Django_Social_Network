@@ -47,12 +47,10 @@ import UserInfo from '@/components/UserInfo.vue'
 import Posts from '@/components/Posts.vue'
 import SuggestedUsers from '@/components/SuggestedUsers.vue'
 import Trends from '@/components/Trends.vue'
-import Friends from '@/components/Friends.vue'
 import Toast from '@/components/Toast.vue'
 import fetchData from '@/utils/handleFetch.js'
 import { filterUsername, isAuthenticatedUser } from '@/utils/filters.js'
 import extractTags from '@/utils/extractTagsFromPost.js'
-import userAvatar from "../assets/images/user-avatar.png"
 import postImage from "../assets/images/post-1.jpg"
 
 const route = useRoute()
@@ -67,7 +65,8 @@ const userProfile = reactive({
   email: '',
   following: [],
   followers: [],
-  posts_count: 0
+  posts_count: 0,
+  avatar_path: ''
 })
 const posts = ref([])
 const body = ref('')

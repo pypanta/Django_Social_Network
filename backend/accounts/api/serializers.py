@@ -8,13 +8,14 @@ class UserSerializer(serializers.ModelSerializer):
     posts_count = serializers.SerializerMethodField(read_only=True)
     following = serializers.SerializerMethodField(read_only=True)
     followers = serializers.SerializerMethodField(read_only=True)
+    avatar_path = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
         fields = (
             'id', 'first_name', 'last_name', 'username', 'email',
             'date_joined', 'last_login', 'posts', 'posts_count',
-            'following', 'followers'
+            'following', 'followers', 'avatar', 'avatar_path'
         )
 
     def get_posts(self, obj):
@@ -26,6 +27,10 @@ class UserSerializer(serializers.ModelSerializer):
     def get_following(self, obj):
         following = []
         for f in obj.following.all():
+            if f.followed.avatar:
+                avatar = f"http://127.0.0.1:8000/media/{f.followed.avatar}"
+            else:
+                avatar = ''
             following.append(
                 {
                     'id': f.followed.id,
@@ -33,6 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
                     'last_name': f.followed.last_name,
                     'username': f.followed.username,
                     'email': f.followed.email,
+                    'avatar_path': avatar,
                     'status': f.status
                 }
             )
@@ -41,6 +47,10 @@ class UserSerializer(serializers.ModelSerializer):
     def get_followers(self, obj):
         followers = []
         for f in obj.followers.all():
+            if f.follower.avatar:
+                avatar = f"http://127.0.0.1:8000/media/{f.follower.avatar}"
+            else:
+                avatar = ''
             followers.append(
                 {
                     'id': f.follower.id,
@@ -48,10 +58,15 @@ class UserSerializer(serializers.ModelSerializer):
                     'last_name': f.follower.last_name,
                     'username': f.follower.username,
                     'email': f.follower.email,
+                    'avatar_path': avatar,
                     'status': f.status
                 }
             )
         return followers
+
+    def get_avatar_path(self, obj):
+        if obj.avatar:
+            return f"http://127.0.0.1:8000/media/{obj.avatar}"
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):

@@ -283,6 +283,9 @@ main {
 
 /* Timeline User Info */
 .user-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--15px);
   height: max-content;
   padding: var(--20px);
   text-align: center;
@@ -290,7 +293,6 @@ main {
 }
 
 .user-info-name {
-  margin: var(--10px) 0;
   font-size: var(--20px);
   font-weight: 600;
 }
@@ -310,13 +312,22 @@ main {
   font-weight: 500;
 }
 
-.user-info > button {
-  margin-top: var(--15px);
+.user-info-status {
+  display: flex;
+  flex-direction: column;
+  gap: var(--15px);
+}
+
+.user-info-status > button,
+.user-info-status > a {
+  align-self: center;
   background-color: hsl(210, 100%, 50%);
 }
 
-.user-info > button:focus,
-.user-info > button:hover {
+.user-info-status > button:focus,
+.user-info-status > button:hover,
+.user-info-status > a:focus,
+.user-info-status > a:hover {
   background-color: hsl(210, 100%, 60%);
 }
 
@@ -705,14 +716,16 @@ main {
   background-color: hsl(330, 100%, 45%);
 }
 
-.search-result {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--20px);
-}
-
 .search-result > .user-info {
   border-radius: var(--10px);
+}
+
+.search-result > .user-info > * {
+  margin-inline: auto;
+}
+
+.search-result .user-info-stats {
+  gap: var(--20px);
 }
 
 .error {

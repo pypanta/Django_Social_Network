@@ -42,7 +42,6 @@ import Posts from '@/components/Posts.vue'
 import Trends from '@/components/Trends.vue'
 import fetchData from '@/utils/handleFetch.js'
 import extractTags from '@/utils/extractTagsFromPost.js'
-import userAvatar from "../assets/images/user-avatar.png"
 import postImage from "../assets/images/post-1.jpg"
 
 const store = useUserStore()
@@ -61,7 +60,7 @@ onMounted(async () => {
 
 const handleSubmit = async () => {
   const files = document.querySelector('input[type="file"]')
-  const formData  = new FormData()
+  const formData = new FormData()
   formData.append('body', body.value)
   for (let i of files.files) {
     formData.append('images', i)

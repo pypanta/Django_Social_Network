@@ -1,7 +1,10 @@
 <template>
   <div v-for="comment in comments" class="comments">
     <section class="status-post-info">
-      <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
+      <img
+        :src="comment.created_by.avatar_path ? comment.created_by.avatar_path : userAvatar"
+        alt="Avatar" class="user-avatar-50"
+      >
       <p class="status-post-info-name">{{ filterUsername(comment.created_by) }}</p>
       <p class="status-post-info-time">{{ comment.time_ago }} ago.</p>
     </section>

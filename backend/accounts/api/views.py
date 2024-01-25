@@ -6,7 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
 from rest_framework import generics, status, filters
-from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -192,3 +192,32 @@ class AcceptFriendshipAPIView(APIView):
                 return Response(
                     {'message': 'Friendship request is on pending'})
         return Response({'message': 'Friendship not found'})
+
+
+class EditProfile(generics.UpdateAPIView):
+    """View for handling user profile editing."""
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    authentication_classes = [JWTAuthentication]
+    lookup_field = 'id'
+
+    def get_object(self):
+        """Get the user object for the profile being edited."""
+        user_obj = self.request.user
+        profile_id = self.kwargs[self.lookup_field]
+
+        if user_obj.id != profile_id:
+            raise PermissionDenied(
+                "You do not have permission to edit this profile.")
+        return user_obj
+
+    def update(self, request, *args, **kwargs):
+        """Handles PUT requests for updating a user's profile."""
+        instance = self.get_object()
+        serializer = self.get_serializer(instance,
+                                         data=request.data,
+                                         partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        return Response(serializer.data)

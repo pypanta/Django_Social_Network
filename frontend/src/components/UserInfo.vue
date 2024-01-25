@@ -1,6 +1,9 @@
 <template>
   <div v-if="route.name === 'profile'" class="user-info">
-    <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
+    <img
+      :src="userProfile.avatar_path ? userProfile.avatar_path : userAvatar"
+      alt="Avatar" class="user-avatar-200"
+    >
     <p class="user-info-name">
       {{ filterUsername(userProfile) }}
     </p>
@@ -48,29 +51,42 @@
       />
       <a href=#>{{ userProfile.posts_count }} posts</a>
     </div>
-    <button
-      v-if="isFollowed && !isLoggedInUser"
-      @click="handleFollow('unfollow')"
-      class="btn"
-    >
-      Unfollow
-    </button>
-    <button
-      v-else-if="!isLoggedInUser"
-      @click="handleFollow('follow')"
-      class="btn"
-    >
-      Follow
-    </button>
-    <button
-      v-if="!isLoggedInUser"
-      @click="startConversation"
-      class="btn-small">
-        Start conversation
-    </button>
+    <div v-if="isLoggedInUser" class="user-info-status">
+      <router-link
+        :to="{ name: 'editprofileview' }"
+        class="btn-small"
+      >
+        Edit Profile
+      </router-link>
+    </div>
+    <div v-else class="user-info-status">
+      <button
+        v-if="isFollowed && !isLoggedInUser"
+        @click="handleFollow('unfollow')"
+        class="btn"
+      >
+        Unfollow
+      </button>
+      <button
+        v-else-if="!isLoggedInUser"
+        @click="handleFollow('follow')"
+        class="btn"
+      >
+        Follow
+      </button>
+      <button
+        v-if="!isLoggedInUser"
+        @click="startConversation"
+        class="btn-small">
+          Start conversation
+      </button>
+    </div>
   </div>
   <div v-else class="user-info">
-    <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
+    <img
+      :src="userProfile.avatar_path ? userProfile.avatar_path : userAvatar"
+      alt="Avatar" class="user-avatar-200"
+    >
     <p class="user-info-name">
       {{ filterUsername(userProfile) }}
     </p>

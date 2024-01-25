@@ -40,7 +40,6 @@ import Posts from '@/components/Posts.vue'
 import Comments from '@/components/Comments.vue'
 import Trends from '@/components/Trends.vue'
 import fetchData from '@/utils/handleFetch.js'
-import userAvatar from "../assets/images/user-avatar.png"
 import postImage from "../assets/images/post-1.jpg"
 
 const route = useRoute()

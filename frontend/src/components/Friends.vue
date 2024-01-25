@@ -5,7 +5,10 @@
       <ul class="modal-list">
         <li v-for="friend in friends" :key="friend.id">
           <div v-if="isLoggedInUser && friend.status === 'PE'">
-            <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
+            <img
+              :src="friend.avatar_path ? friend.avatar_path : userAvatar"
+              alt="Avatar" class="user-avatar-50"
+            >
             <div class="modal-links">
               <router-link :to="{ name: 'profile', params: { id: friend.id }}">
                 {{ filterUsername(friend) }}
@@ -33,7 +36,10 @@
             </div>
           </div>
           <div v-else-if="friend.status === 'AC'">
-            <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
+            <img
+              :src="friend.avatar_path ? friend.avatar_path : userAvatar"
+              alt="Avatar" class="user-avatar-50"
+            >
             <div class="modal-links">
               <router-link :to="{ name: 'profile', params: { id: friend.id }}">
                 {{ filterUsername(friend) }}

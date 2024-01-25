@@ -13,7 +13,8 @@ export const useUserStore = defineStore('user', () => {
     email: '',
     followers: [],
     following: [],
-    posts: []
+    posts: [],
+    avatar_path: null
   });
 
   const getUsername = computed(() => {
@@ -77,5 +78,13 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { isAuthenticated, message, userData, getUser, getUsername, getFriendsCount, getFriends }
+  return {
+    isAuthenticated,
+    message,
+    userData,
+    getUser,
+    getUsername,
+    getFriendsCount,
+    getFriends,
+  }
 })

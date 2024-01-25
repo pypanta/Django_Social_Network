@@ -2,7 +2,10 @@
   <Toast />
   <article v-for="post in posts" key="post.id" class="status-post">
     <section class="status-post-info">
-      <img :src="userAvatar" alt="Avatar" class="user-avatar-50">
+      <img
+        :src="post.created_by.avatar_path ? post.created_by.avatar_path : userAvatar"
+        alt="Avatar" class="user-avatar-50"
+      >
       <p class="status-post-info-name">{{ filterUsername(post.created_by) }}</p>
       <p class="status-post-info-time">{{ post.time_ago }} ago.</p>
     </section>

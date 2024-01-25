@@ -9,6 +9,7 @@ import ProfileView from '../views/ProfileView.vue'
 import PostView from '../views/PostView.vue'
 import ChatView from '../views/ChatView.vue'
 import TagView from '../views/TagView.vue'
+import EditProfileView from '../views/EditProfileView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,6 +58,11 @@ const router = createRouter({
       path: '/:id',
       name: 'postview',
       component: PostView
+    },
+    {
+      path: '/profile/edit',
+      name: 'editprofileview',
+      component: EditProfileView
     },
     {
       path: '/profile/:id',

@@ -8,6 +8,14 @@ from django.contrib.auth.models import (
 from django.db import models
 
 
+def upload_user_avatar(instance, filename):
+    if instance.username:
+        user = instance.username
+    else:
+        user = instance.email.split('@')[0]
+    return f"avatar/{user}/{filename}"
+
+
 class UserManager(BaseUserManager):
     def create_user(self,
                     email,
@@ -58,7 +66,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                                 blank=True,
                                 null=True)
     email = models.EmailField(unique=True)
-    avatar = models.ImageField(upload_to='avatars', blank=True, null=True)
+    avatar = models.ImageField(upload_to=upload_user_avatar,
+                               blank=True,
+                               null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(auto_now_add=True)
     is_admin = models.BooleanField(default=False)

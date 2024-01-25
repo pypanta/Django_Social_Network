@@ -21,4 +21,6 @@ urlpatterns = [
     path('user/unfollow/', views.UnfollowAPIView.as_view(), name='unfollow'),
     path('user/accept/', views.AcceptFriendshipAPIView.as_view(),
         name='accept'),
+    path('user/<uuid:id>/edit/', views.EditProfile.as_view(),
+         name='edit-profile'),
 ]

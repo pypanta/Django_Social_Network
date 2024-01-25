@@ -12,9 +12,9 @@ class AccountAPITestCase(APITestCase):
         u.set_password('test1234')
         u.save()
 
-    def _login(self):
+    def _login(self, email='test@email.com', password='test1234'):
         url = reverse('accounts:login')
-        payload = {'email': 'test@email.com', 'password': 'test1234'}
+        payload = {'email': email, 'password': password}
         response = self.client.post(url, payload, format='json')
         return response
 
@@ -142,3 +142,36 @@ class AccountAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             u1.followers.filter(follower__id=u2.id).first().status, 'AC')
+
+    def test_edit_user_profile_api_view(self):
+        user = User.objects.filter(email__icontains='test').first()
+        self.assertEqual(user.username, None)
+        self.assertEqual(user.first_name, None)
+        self.assertEqual(user.last_name, None)
+
+        self._login()
+        url = reverse('accounts:edit-profile', args=[user.id])
+        payload = {'first_name': 'Testing',
+                   'last_name': 'User',
+                   'username': 'test'}
+        response = self.client.put(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        user_updated = User.objects.filter(email__icontains='test').first()
+        self.assertEqual(user_updated.username, 'test')
+        self.assertEqual(user_updated.first_name, 'Testing')
+        self.assertEqual(user_updated.last_name, 'User')
+
+    def test_user_can_edit_only_his_own_profile(self):
+        self._create_user(1)
+        user = User.objects.filter(email__icontains='user').first()
+
+        # log in as a test user
+        self._login()
+        url = reverse('accounts:edit-profile', args=[user.id])
+        payload = {'first_name': 'Testing',
+                   'last_name': 'User',
+                   'username': 'test'}
+        response = self.client.put(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.data['detail'][:],
+                         'You do not have permission to edit this profile.')

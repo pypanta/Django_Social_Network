@@ -32,7 +32,10 @@
       </form>
       <div class="search-result">
         <div v-for="user in users" :key="user.id" class="user-info">
-          <img :src="userAvatar" alt="Avatar" class="user-avatar-200">
+          <img
+            :src="user.avatar_path ? user.avatar_path : userAvatar"
+            alt="Avatar" class="user-avatar-200"
+          >
           <p class="user-info-name">
           <router-link :to="{ name: 'profile', params: {id: user.id }}">
             {{ filterUsername(user) }}
