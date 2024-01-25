@@ -71,6 +71,7 @@ const handleSubmit = async () => {
   if (response.ok) {
     const data = await response.json()
     posts.value.unshift(data)
+    store.userData.posts.unshift(data)
     body.value = ''
     files.value = null
   } else {

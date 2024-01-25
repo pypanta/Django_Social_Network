@@ -123,6 +123,7 @@ const handleSubmit = async () => {
   if (response.ok) {
     const data = await response.json()
     posts.value.unshift(data)
+    userProfile.posts_count += 1
     body.value = ''
     files.value = null
   } else {
