@@ -1,11 +1,17 @@
 import jwt
 
 from django.conf import settings
+from django.contrib.auth.password_validation import (
+    MinimumLengthValidator,
+    NumericPasswordValidator,
+    validate_password
+)
+from django.core.exceptions import ValidationError
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
-from rest_framework import generics, status, filters
+from rest_framework import filters, generics, status
 from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -221,3 +227,50 @@ class EditProfile(generics.UpdateAPIView):
         self.perform_update(serializer)
 
         return Response(serializer.data)
+
+
+class ChangePasswordAPIView(APIView):
+    """API view for changing user password."""
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request):
+        """
+        Handle the password change process.
+
+        Parameters:
+            - request: HTTP request object containing user and password data.
+        """
+        user = request.user
+        data = request.data
+
+        # Checks the current user password
+        if not user.check_password(data.get('old_password')):
+            return Response({'message': 'Your old password is not valid!'},
+                            status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        # Check if the new password and its confirmation match
+        if data.get('new_password') != data.get('new_password_confirm'):
+            return Response({
+                'message': f"New password and new password confirm must "
+                           f"be the same!"
+            }, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        # Validate the new password using Django password validators
+        try:
+            validate_password(password=data.get('new_password'),
+                              user=user,
+                              password_validators=[
+                                  NumericPasswordValidator(),
+                                  MinimumLengthValidator(min_length=4)
+                              ]
+            )
+        except ValidationError as e:
+            return Response({'message': f"{' '.join(m for m in e.messages)}"},
+                            status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+
+        # Set the new password for the user and save the changes
+        user.set_password(data.get('new_password'))
+        user.save()
+
+        return Response({'message': 'Your password is successfully changed!'},
+                        status=status.HTTP_200_OK)

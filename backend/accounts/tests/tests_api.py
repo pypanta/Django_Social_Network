@@ -175,3 +175,63 @@ class AccountAPITestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data['detail'][:],
                          'You do not have permission to edit this profile.')
+
+    # Change password tests
+    def test_change_password_api_view(self):
+        self._login()
+        url = reverse('accounts:change-password')
+        payload = {'old_password': 'test1234',
+                   'new_password': 'test5678',
+                   'new_password_confirm': 'test5678'}
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['message'],
+                         'Your password is successfully changed!')
+
+    def test_change_password_api_view_short_password(self):
+        self._login()
+        url = reverse('accounts:change-password')
+        payload = {'old_password': 'test1234',
+                   'new_password': '1ab',
+                   'new_password_confirm': '1ab'}
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code,
+                         status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.data['message'],
+        'This password is too short. It must contain at least 4 characters.')
+
+    def test_change_password_api_view_password_entirely_numeric(self):
+        self._login()
+        url = reverse('accounts:change-password')
+        payload = {'old_password': 'test1234',
+                   'new_password': '1234',
+                   'new_password_confirm': '1234'}
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code,
+                         status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.data['message'],
+                         'This password is entirely numeric.')
+
+    def test_change_password_api_view_passwords_must_be_equal(self):
+        self._login()
+        url = reverse('accounts:change-password')
+        payload = {'old_password': 'test1234',
+                   'new_password': 'test5678',
+                   'new_password_confirm': 'test9XXX'}
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code,
+                         status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.data['message'].replace('  ', ' '),
+            'New password and new password confirm must be the same!')
+
+    def test_change_password_api_view_old_password_is_not_valid(self):
+        self._login()
+        url = reverse('accounts:change-password')
+        payload = {'old_password': 'invalid',
+                   'new_password': 'test5678',
+                   'new_password_confirm': 'test5678'}
+        response = self.client.post(url, payload, format='json')
+        self.assertEqual(response.status_code,
+                         status.HTTP_422_UNPROCESSABLE_ENTITY)
+        self.assertEqual(response.data['message'],
+                         'Your old password is not valid!')
