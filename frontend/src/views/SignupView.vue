@@ -50,9 +50,11 @@
 <script setup>
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { useToastStore } from '@/stores/toast'
 import fetchData from '@/utils/handleFetch.js'
 
 const router = useRouter()
+const toast = useToastStore()
 
 const data = reactive({
   first_name: '',
@@ -72,6 +74,9 @@ const errors = reactive({
 const handleSubmit = async () => {
   const response = await fetchData('signup', 'POST', data)
   if (response.ok) {
+    toast.showToast(10000,
+                    'Please check your e-mail to activate your account!',
+                    'message-success')
     router.push({ name: 'login' })
   } else {
     const responseError = {

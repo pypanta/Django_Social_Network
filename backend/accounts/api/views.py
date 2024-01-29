@@ -7,6 +7,7 @@ from django.contrib.auth.password_validation import (
     validate_password
 )
 from django.core.exceptions import ValidationError
+from django.core.mail import send_mail
 from django.db.models import Q
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
@@ -32,7 +33,18 @@ class Signup(APIView):
         data = request.data
         serializer = UserRegisterSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        user = serializer.save()
+
+        # Send account activation e-mail
+        url = f"http://127.0.0.1:8000/accounts/activate/{user.id}"
+        send_mail(
+            "Please verify your e-mail address",
+            f"Click on: {url} URL address to activate your account.",
+            "noreply@example.com",
+            [user.email],
+            fail_silently=False,
+        )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -49,6 +61,10 @@ class LoginAPIView(APIView):
             user_obj = qs.first()
         else:
             raise AuthenticationFailed('Invalid username or email!')
+
+        if not user_obj.is_active:
+            raise AuthenticationFailed(
+                'Your account is not activated! Please, check your e-mail.')
 
         if user_obj.check_password(password):
             user = user_obj

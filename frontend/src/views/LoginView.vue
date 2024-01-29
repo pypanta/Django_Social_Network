@@ -1,4 +1,5 @@
 <template>
+  <Toast />
   <section class="auth">
     <div>
       <h2>Log In</h2>
@@ -45,6 +46,7 @@ import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useUserStore } from '@/stores/user'
+import Toast from '@/components/Toast.vue'
 import fetchData from '@/utils/handleFetch.js'
 
 const store = useUserStore()
