@@ -117,8 +117,10 @@ const handleSubmit = async () => {
   for (let i of files.files) {
     formData.append('images', i)
   }
+
   const tags = extractTags(formData.get('body'))
-  formData.append('tags', tags)
+  if (tags) formData.append('tags', tags)
+
   const response = await fetchData('posts', 'POST', formData)
   if (response.ok) {
     const data = await response.json()
