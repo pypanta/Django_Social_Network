@@ -19,6 +19,8 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenBlacklistView, TokenRefreshView
 
+from notifications.utils import send_notification
+
 from ..models import User
 from .authentication import JWTAuthentication
 from .permissions import AnonPermissionOnly
@@ -163,6 +165,7 @@ class FollowAPIView(APIView):
             user = request.user
             friendship, created = user.follow(to_follow)
             if created:
+                send_notification(user, to_follow, 'newfriendrequest', user)
                 return Response({'message': f'Follow: {to_follow}'},
                                 status=status.HTTP_200_OK)
             if friendship and not created:
@@ -206,9 +209,13 @@ class AcceptFriendshipAPIView(APIView):
             if friend.status == 'PE' and status == 'accept':
                 friend.status = 'AC'
                 friend.save()
+                send_notification(friend.followed, friend.follower,
+                                  'acceptedfriendrequest', friend.followed)
                 return Response({'message': 'Friendship request is accepted'})
             elif friend.status == 'PE' and status == 'reject':
                 friend.delete()
+                send_notification(friend.followed, friend.follower,
+                                  'rejectedfriendrequest', friend.followed)
                 return Response({'message': 'Friendship request is rejected'})
             else:
                 return Response(

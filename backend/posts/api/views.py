@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from accounts.api.authentication import JWTAuthentication
 from accounts.api.serializers import UserSerializer
 from accounts.models import User
+from notifications.utils import send_notification
 
 from ..models import Comment, Like, Post, Tag
 from .serializers import CommentSerializer, PostSerializer, TagSerializer
@@ -120,6 +121,7 @@ class LikeAPIView(APIView):
         if liked is None:
             like = Like.objects.create(created_by=request.user)
             post.likes.add(like)
+            send_notification(request.user, post.created_by, 'postlike', post)
             return Response({'message': 'Liked'})
         liked.delete()
         return Response({'message': 'Unliked'})
@@ -138,6 +140,8 @@ class CommentAPIView(generics.ListCreateAPIView):
         post_id = self.kwargs.get('post_id')
         post = get_object_or_404(Post, id=post_id)
         serializer.save(created_by=self.request.user, post=post)
+        send_notification(self.request.user, post.created_by,
+                          'postcomment', post)
 
     def create(self, request, *args, **kwargs):
         """Create a new comment."""
