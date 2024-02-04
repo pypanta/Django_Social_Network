@@ -23,6 +23,9 @@ urlpatterns = [
         name='accept'),
     path('user/change-password/', views.ChangePasswordAPIView.as_view(),
          name='change-password'),
+    path('user/suggest-friendships/',
+         views.SuggestFriendshipsAPIView.as_view(),
+         name='suggest-frienships'),
     path('user/<uuid:id>/edit/', views.EditProfile.as_view(),
          name='edit-profile'),
 ]

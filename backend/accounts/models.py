@@ -115,7 +115,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         friendship, created = Friendship.objects.get_or_create(
             follower=self,
-            followed=to_follow)
+            followed=to_follow,
+            status=status)
 
         return friendship, created
 

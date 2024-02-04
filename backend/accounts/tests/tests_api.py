@@ -8,7 +8,7 @@ from ..models import User
 
 class AccountAPITestCase(APITestCase):
     def setUp(self):
-        u = User.objects.create(email='test@email.com')
+        u = User.objects.create(email='test@email.com', is_active=True)
         u.set_password('test1234')
         u.save()
 
@@ -18,13 +18,20 @@ class AccountAPITestCase(APITestCase):
         response = self.client.post(url, payload, format='json')
         return response
 
-    def _create_user(self, count=0):
+    def _create_user(self, count=0, password=None):
         users = []
         for i in range(1, count+1):
             users.append(
-                User(username=f"user{i}", email=f"user{i}@email.com")
+                User(username=f"user{i}",
+                     email=f"user{i}@email.com",
+                     is_active=True)
             )
         User.objects.bulk_create(users)
+
+        if password is not None:
+            for user in User.objects.exclude(email='test@email.com'):
+                user.set_password('test1234')
+                user.save()
 
     def test_signup_view(self):
         url = reverse('accounts:signup')
@@ -235,3 +242,22 @@ class AccountAPITestCase(APITestCase):
                          status.HTTP_422_UNPROCESSABLE_ENTITY)
         self.assertEqual(response.data['message'],
                          'Your old password is not valid!')
+
+    def test_suggest_friendships(self):
+        # Create and get users
+        self._create_user(count=4, password='test1234')
+        user1 = User.objects.get(username='user1')
+        user2 = User.objects.get(username='user2')
+        user3 = User.objects.get(username='user3')
+        # Create friendships
+        user2.follow(user1, status='AC')
+        user1.follow(user2, status='AC')
+        user3.follow(user1, status='AC')
+        user1.follow(user3, status='AC')
+
+        # Log in as user2
+        self._login(email=user2.email)
+        url = reverse('accounts:suggest-frienships')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data[0]['username'], 'user3')

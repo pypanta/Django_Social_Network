@@ -1,4 +1,5 @@
 import jwt
+from random import choice
 
 from django.conf import settings
 from django.contrib.auth.password_validation import (
@@ -24,7 +25,11 @@ from notifications.utils import send_notification
 from ..models import User
 from .authentication import JWTAuthentication
 from .permissions import AnonPermissionOnly
-from .serializers import UserRegisterSerializer, UserSerializer
+from .serializers import (
+    SuggestFriendshipsSerializer,
+    UserRegisterSerializer,
+    UserSerializer
+)
 from .utils import get_tokens_for_user
 
 
@@ -297,3 +302,42 @@ class ChangePasswordAPIView(APIView):
 
         return Response({'message': 'Your password is successfully changed!'},
                         status=status.HTTP_200_OK)
+
+
+class SuggestFriendshipsAPIView(generics.ListAPIView):
+    """
+    API view to retrieve a list of suggested friends for
+    the authenticated user.
+    """
+    authentication_classes = [JWTAuthentication]
+    serializer_class = SuggestFriendshipsSerializer
+
+    def list(self, request):
+        """
+        Retrieve a list of suggested friends for the authenticated user.
+
+        Parameters:
+            - request: The HTTP request object.
+
+        Returns:
+            - Response: The serialized list of suggested friends.
+        """
+        user = request.user
+        ids = user.friendships.values_list('id', flat=True)
+
+        if ids.exists():
+            # If the user has existing friendships, select a random friend
+            random_user = User.objects.get(id=choice(ids))
+        else:
+            # Select the first user excluding self
+            random_user = User.objects.exclude(id=user.id).first()
+
+        if random_user is None:
+            return Response({'message': 'Nothing to suggest'})
+
+        # Retrieve friends of the random user who are not already friends
+        # with the authenticated user
+        suggested = random_user.friendships.exclude(id=user.id) \
+                            .difference(user.friendships.all()).all()
+        serializer = self.get_serializer(suggested, many=True)
+        return Response(serializer.data)

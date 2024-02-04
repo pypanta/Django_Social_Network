@@ -3,12 +3,19 @@ from rest_framework import serializers
 from ..models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializerMixin(serializers.Serializer):
+    avatar_path = serializers.SerializerMethodField(read_only=True)
+
+    def get_avatar_path(self, obj):
+        if obj.avatar:
+            return f"http://127.0.0.1:8000/media/{obj.avatar}"
+
+
+class UserSerializer(UserSerializerMixin, serializers.ModelSerializer):
     posts = serializers.SerializerMethodField(read_only=True)
     posts_count = serializers.SerializerMethodField(read_only=True)
     following = serializers.SerializerMethodField(read_only=True)
     followers = serializers.SerializerMethodField(read_only=True)
-    avatar_path = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = User
@@ -64,10 +71,6 @@ class UserSerializer(serializers.ModelSerializer):
             )
         return followers
 
-    def get_avatar_path(self, obj):
-        if obj.avatar:
-            return f"http://127.0.0.1:8000/media/{obj.avatar}"
-
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     password_confirm = serializers.CharField(
@@ -105,3 +108,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         instance.is_active = False
         instance.save()
         return instance
+
+
+class SuggestFriendshipsSerializer(UserSerializerMixin,
+                                   serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'email', 'username', 'first_name',
+                  'last_name', 'avatar_path')

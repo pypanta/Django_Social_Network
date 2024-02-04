@@ -490,11 +490,11 @@ main {
   font-weight: 600;
 }
 
-.suggested-users-group > button {
+.suggested-users-group > .btn {
   align-self: center;
 }
 
-.suggested-users-group > button,
+.suggested-users-group > .btn,
 .trends-group > button {
   padding: var(--10px);
   font-size: var(--15px);
@@ -505,8 +505,8 @@ main {
   border-radius: var(--10px);
 }
 
-.suggested-users-group > button:hover,
-.suggested-users-group > button:focus,
+.suggested-users-group > .btn:hover,
+.suggested-users-group > .btn:focus,
 .trends-group > button:hover,
 .trends-group > button:focus {
   cursor: pointer;
