@@ -12,9 +12,11 @@ class ConversationAPITestCase(APITestCase):
     def setUp(self):
         self.user1 = User.objects.create(email='user1@email.com')
         self.user1.set_password('test1234')
+        self.user1.is_active = True
         self.user1.save()
         self.user2 = User.objects.create(email='user2@email.com')
         self.user2.set_password('test1234')
+        self.user2.is_active = True
         self.user2.save()
         self.conversation = Conversation.objects.create()
         self.conversation.users.add(self.user1, self.user2)

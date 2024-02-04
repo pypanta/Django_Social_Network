@@ -13,6 +13,7 @@ class PostAPITestCase(APITestCase):
     def setUp(self):
         u = User.objects.create(email='test@email.com')
         u.set_password('test1234')
+        u.is_active = True
         u.save()
 
         url = reverse('accounts:login')
@@ -32,6 +33,7 @@ class PostAPITestCase(APITestCase):
         if email is None:
             email = 'test2@email.com'
         user = User.objects.create(email=email)
+        user.is_active = True
         user.set_password('test1234')
         user.save()
         if login:
@@ -175,6 +177,7 @@ class CommentAPITestCase(APITestCase):
         # Create user
         self.user = User.objects.create(email='test@email.com')
         self.user.set_password('test1234')
+        self.user.is_active = True
         self.user.save()
 
         # Login user
@@ -210,6 +213,7 @@ class TagAPITestCase(APITestCase):
         # Create user
         self.user = User.objects.create(email='test@email.com')
         self.user.set_password('test1234')
+        self.user.is_active = True
         self.user.save()
 
         # Login user
